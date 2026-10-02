@@ -25,7 +25,7 @@ describe('complete character sprite atlases', () => {
     const html = renderToStaticMarkup(createElement(OfficeScene, { motionEnabled: true, character: 'male-sparse' }))
     expect(html.match(/class="office-sprite-pose office-sprite-body"/g)).toHaveLength(1)
     expect(html).toContain('data-sprite-frame="idle"')
-    expect(html).toContain('office-male-sparse-v3.png')
+    expect(html).toContain('office-male-sparse-v4.png')
     expect(html).not.toMatch(/<svg|office-hand|clip-path|clipPath/)
   })
 })
