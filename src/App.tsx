@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check, Pause, Play, Shuffle, SlidersHorizontal, UserRound, Volume2, X } from 'lucide-react'
 import OfficeScene from './scene/OfficeScene'
+import { frequencies, intervalLabel, intervalRange } from './audio/frequency'
 import { crowdProfile, MIN_PEOPLE, MAX_PEOPLE } from './audio/crowd'
 import { OfficeEngine } from './audio/OfficeEngine'
 import type { EngineState, MixerSettings } from './audio/types'
@@ -15,7 +16,7 @@ export default function App() {
   const [gender, setGender] = useState<'female' | 'male'>(() => characters.find(c => c.id === character)!.gender)
   const [leftOpen, setLeftOpen] = useState(false)
   const [rightOpen, setRightOpen] = useState(false)
-  const [mode, setMode] = useState<'auto' | 'custom'>(() => categories.every(c => settings.channels[c.id].enabled === c.enabledByDefault) ? 'auto' : 'custom')
+  const mode = settings.playbackMode ?? 'auto'
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState('')
   const engine = useRef<OfficeEngine | null>(null)
@@ -47,12 +48,19 @@ export default function App() {
     window.addEventListener('keydown', listener)
     return () => window.removeEventListener('keydown', listener)
   })
-  const updateChannel = (id: string, update: Partial<MixerSettings['channels'][string]>) => {
-    setMode('custom'); setSettings(s => ({ ...s, channels: { ...s.channels, [id]: { ...s.channels[id], ...update } } }))
+  const updateChannel = (id: string, update: Partial<MixerSettings['channels'][string]>, audition = false) => {
+    const previous = settingsRef.current
+    const channel = { ...previous.channels[id], ...update }
+    if (audition && channel.volume === 0) channel.volume = categories.find(c => c.id === id)!.defaultVolume
+    const next: MixerSettings = { ...previous, playbackMode: 'custom', channels: { ...previous.channels, [id]: channel } }
+    settingsRef.current = next
+    engine.current?.update(next)
+    setSettings(next)
+    if (audition) void engine.current?.preview(id)
   }
   const automatic = () => {
-    setMode('auto'); const preset = defaults()
-    setSettings(s => ({ ...s, channels: Object.fromEntries(categories.map(c => [c.id, preset.channels[c.id] ?? { ...s.channels[c.id], enabled: false }])) }))
+    const preset = defaults()
+    setSettings(s => ({ ...s, playbackMode: 'auto', channels: preset.channels }))
   }
   const playing = state.playing
   const crowd = crowdProfile(settings.officePeople)
@@ -75,10 +83,16 @@ export default function App() {
         <div className="occupancy-endpoints" aria-hidden="true"><span>{MIN_PEOPLE}명</span><span>{MAX_PEOPLE}명</span></div>
         <p id="overlap-limit">최대 <strong>{crowd.maxVoices}개</strong> 소리 동시 재생</p>
       </div>
-      <div className="segmented"><button aria-pressed={mode === 'auto'} onClick={automatic}><Shuffle size={13}/>자동</button><button aria-pressed={mode === 'custom'} onClick={() => setMode('custom')}>직접 선택</button></div>
+      <div className="segmented"><button aria-pressed={mode === 'auto'} onClick={automatic}><Shuffle size={13}/>자동</button><button aria-pressed={mode === 'custom'} onClick={() => setSettings(s => ({ ...s, playbackMode: 'custom' }))}>직접 선택</button></div>
       {mode === 'custom' && <>
         <div className="list-toolbar"><button onClick={() => setSettings(s => ({ ...s, channels: Object.fromEntries(categories.map(c => [c.id, { ...s.channels[c.id], enabled: true }])) }))}>모두 켜기</button><button onClick={() => setSettings(s => ({ ...s, channels: Object.fromEntries(categories.map(c => [c.id, { ...s.channels[c.id], enabled: false }])) }))}>모두 끄기</button></div>
-        <div className="sound-list">{categories.map(c => <label className={`sound-option ${state.active.includes(c.id) ? 'is-active' : ''}`} key={c.id}><span>{c.name}</span><input type="checkbox" checked={settings.channels[c.id].enabled} onChange={e => updateChannel(c.id, { enabled: e.target.checked })}/></label>)}</div>
+        <p className="sound-hint">체크하면 한 번 미리듣기 · 재생 후 대기 간격</p>
+        <div className="sound-list">{categories.map(c => <div className="sound-row" key={c.id}>
+          <label className={`sound-option ${state.active.includes(c.id) ? 'is-active' : ''}`}><span>{c.name}</span><input type="checkbox" checked={settings.channels[c.id].enabled} onChange={e => updateChannel(c.id, { enabled: e.target.checked }, e.target.checked)}/></label>
+          <div className="sound-frequency" role="group" aria-label={`${c.name} 빈도`}>{frequencies.map(f => <button key={f.id} aria-pressed={(settings.channels[c.id].frequency ?? 'normal') === f.id} onClick={() => updateChannel(c.id, { frequency: f.id })}>{f.name}</button>)}</div>
+          <small className="sound-interval">{intervalLabel(intervalRange(c, settings.channels[c.id].frequency))}</small>
+          {state.errors[c.id] && <small className="sound-error" role="alert">{state.errors[c.id]}</small>}
+        </div>)}</div>
       </>}
 
     </aside>

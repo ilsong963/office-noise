@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs'
 import { OfficeEngine } from '../src/audio/OfficeEngine'
 import { canPlay, chooseFile, naturalDelay } from '../src/audio/random'
 import { categories } from '../src/data/sounds'
+import { intervalRange } from '../src/audio/frequency'
 import { restore } from '../src/data/settings'
 import type { EngineState, SoundCategory } from '../src/audio/types'
 
@@ -236,5 +237,69 @@ describe('animation follows playback', () => {
   it('persists the new animation choice without importing the removed sound preference', () => {
     expect(restore('{"animationEnabled":false}').animationEnabled).toBe(false)
     expect(restore('{"personalEvents":false,"characterMotion":false}').animationEnabled).toBe(true)
+  })
+})
+
+
+describe('checkbox audition and three frequency levels', () => {
+  const effect = { ...small, id: 'printer', prominent: true, minInterval: 10, maxInterval: 10 }
+  const mix = { master: .5, playbackMode: 'custom' as const, channels: { printer: { enabled: true, volume: .5 } } }
+  it('auditions immediately while paused, then stays paused without animation', async () => {
+    let state: EngineState | undefined
+    engine = new OfficeEngine([effect], mix, s => { state = s })
+    await engine.preview('printer')
+    expect(starts).toBe(1); expect(state?.playing).toBe(false)
+    expect(state?.personal).toBeUndefined(); expect(state?.active).toEqual(['printer'])
+    await vi.advanceTimersByTimeAsync(600000)
+    expect(starts).toBe(1); expect(state?.active).toEqual([]); expect(suspends).toBeGreaterThan(0)
+  })
+  it.each([['low', 18], ['normal', 10], ['high', 4.5]] as const)('waits the %s interval after an audition finishes, without an old timer', async (frequency, seconds) => {
+    engine = new OfficeEngine([effect], { ...mix, channels: { printer: { ...mix.channels.printer, frequency } } }, () => {})
+    await engine.start(); await vi.advanceTimersByTimeAsync(1000)
+    await engine.preview('printer'); expect(starts).toBe(1)
+    await vi.advanceTimersByTimeAsync(500 + seconds * 1000 - 1); expect(starts).toBe(1)
+    await vi.advanceTimersByTimeAsync(2); expect(starts).toBe(2)
+  })
+  it.each(['disable', 'pause', 'dispose'] as const)('cancels a pending audition on %s', async action => {
+    let finish!: (value: unknown) => void
+    vi.stubGlobal('fetch', () => new Promise(resolve => { finish = resolve }))
+    engine = new OfficeEngine([effect], mix, () => {})
+    const audition = engine.preview('printer'); await vi.advanceTimersByTimeAsync(1)
+    if (action === 'disable') engine.update({ ...mix, channels: { printer: { enabled: false, volume: .5 } } })
+    else engine[action]()
+    finish({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) }); await audition
+    expect(starts).toBe(0)
+  })
+  it('does not let character sounds bypass custom frequency', async () => {
+    engine = new OfficeEngine([{ ...small, minInterval: 20, maxInterval: 20 }], { ...settings, playbackMode: 'custom' }, () => {})
+    await engine.start(); await vi.advanceTimersByTimeAsync(19999); expect(starts).toBe(0)
+    await vi.advanceTimersByTimeAsync(2); expect(starts).toBe(1)
+  })
+  it('applies a frequency change to the next wait of an active sound', async () => {
+    engine = new OfficeEngine([effect], mix, () => {})
+    await engine.start(); await engine.preview('printer')
+    engine.update({ ...mix, channels: { printer: { ...mix.channels.printer, frequency: 'high' } } })
+    await vi.advanceTimersByTimeAsync(4999); expect(starts).toBe(1)
+    await vi.advanceTimersByTimeAsync(2); expect(starts).toBe(2)
+  })
+  it('reports audition load errors and allows the next check to recover', async () => {
+    let state: EngineState | undefined
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValue({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) }))
+    engine = new OfficeEngine([effect], mix, s => { state = s })
+    await engine.preview('printer'); expect(state?.errors.printer).toBeTruthy()
+    await engine.preview('printer'); expect(starts).toBe(1); expect(state?.errors.printer).toBeUndefined()
+  })
+  it('preempts a preview rather than exceeding the solo office limit', async () => {
+    const list = [effect, { ...effect, id: 'paper', prominent: false }]
+    let max = 0
+    engine = new OfficeEngine(list, { ...mix, officePeople: 1, channels: { ...mix.channels, paper: { enabled: true, volume: .5 } } }, s => { max = Math.max(max, s.active.length) })
+    await engine.preview('printer'); await engine.preview('paper')
+    expect(starts).toBe(2); expect(max).toBe(1)
+  })
+  it('restores three valid levels, rejects unknown levels and bounds long waits', () => {
+    for (const frequency of ['low', 'normal', 'high']) expect(restore(JSON.stringify({ playbackMode: 'custom', channels: { printer: { frequency } } })).channels.printer.frequency).toBe(frequency)
+    expect(restore('{"channels":{"printer":{"frequency":"invalid"}}}').channels.printer.frequency).toBeUndefined()
+    expect(restore('{"channels":{"printer":{"enabled":false}}}').playbackMode).toBe('custom')
+    expect(intervalRange({ ...effect, minInterval: 180, maxInterval: 300 }, 'low')).toEqual([240, 240])
   })
 })

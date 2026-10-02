@@ -212,8 +212,8 @@ export const categories: SoundCategory[] = [
         "originalFile": "freesound_community-squeaking-office-chair-67137.mp3"
       }
     ],
-    "minInterval": 48,
-    "maxInterval": 120,
+    "minInterval": 35,
+    "maxInterval": 80,
     "minVolume": 0.86,
     "maxVolume": 1.06,
     "panRange": [
@@ -241,8 +241,8 @@ export const categories: SoundCategory[] = [
         "originalFile": "mixkit-footsteps-on-heels-on-the-pavement-542.wav"
       }
     ],
-    "minInterval": 80,
-    "maxInterval": 180,
+    "minInterval": 45,
+    "maxInterval": 100,
     "minVolume": 0.86,
     "maxVolume": 1.06,
     "panRange": [
@@ -262,7 +262,7 @@ export const categories: SoundCategory[] = [
     "soundFiles": [
       {
         "file": "printer/printer-01-printing.mp3",
-        "gain": 0.0564,
+        "gain": 0.1128,
         "duration": 13.464,
         "trimStart": 0.55,
         "trimEnd": 13.2,
@@ -271,7 +271,7 @@ export const categories: SoundCategory[] = [
       },
       {
         "file": "printer/printer-02-printing.mp3",
-        "gain": 0.0732,
+        "gain": 0.1464,
         "duration": 13.752,
         "trimStart": 0,
         "trimEnd": 13.752,
@@ -279,8 +279,8 @@ export const categories: SoundCategory[] = [
         "originalFile": "freesound_community-es-printer-68850.mp3"
       }
     ],
-    "minInterval": 210,
-    "maxInterval": 420,
+    "minInterval": 60,
+    "maxInterval": 120,
     "minVolume": 0.86,
     "maxVolume": 1.06,
     "panRange": [
@@ -290,7 +290,11 @@ export const categories: SoundCategory[] = [
     "enabledByDefault": true,
     "defaultVolume": 0.3,
     "densityCost": 1.8,
-    "prominent": true
+    "prominent": true,
+    "initialDelay": [
+      18,
+      35
+    ]
   },
   {
     "id": "phone-vibration",
@@ -309,8 +313,8 @@ export const categories: SoundCategory[] = [
         "originalFile": "freesound_community-phone-vibration-96623.mp3"
       }
     ],
-    "minInterval": 150,
-    "maxInterval": 330,
+    "minInterval": 50,
+    "maxInterval": 100,
     "minVolume": 0.86,
     "maxVolume": 1.06,
     "panRange": [
@@ -320,7 +324,11 @@ export const categories: SoundCategory[] = [
     "enabledByDefault": true,
     "defaultVolume": 0.32,
     "densityCost": 1.4,
-    "prominent": true
+    "prominent": true,
+    "initialDelay": [
+      20,
+      45
+    ]
   },
   {
     "id": "water",
@@ -348,8 +356,8 @@ export const categories: SoundCategory[] = [
         "originalFile": "mixkit-drinking-water-quickly-143.wav"
       }
     ],
-    "minInterval": 90,
-    "maxInterval": 200,
+    "minInterval": 35,
+    "maxInterval": 85,
     "minVolume": 0.86,
     "maxVolume": 1.06,
     "panRange": [
@@ -404,8 +412,8 @@ export const categories: SoundCategory[] = [
         "originalFile": "locrpg-deep-breath-sigh-104109.mp3"
       }
     ],
-    "minInterval": 110,
-    "maxInterval": 260,
+    "minInterval": 55,
+    "maxInterval": 110,
     "minVolume": 0.86,
     "maxVolume": 1.06,
     "panRange": [
@@ -434,8 +442,8 @@ export const categories: SoundCategory[] = [
         "originalFile": "freesound_community-sniff-93949.mp3"
       }
     ],
-    "minInterval": 150,
-    "maxInterval": 320,
+    "minInterval": 70,
+    "maxInterval": 140,
     "minVolume": 0.86,
     "maxVolume": 1.06,
     "panRange": [
@@ -464,8 +472,8 @@ export const categories: SoundCategory[] = [
         "originalFile": "freesound_community-stapler-45637.mp3"
       }
     ],
-    "minInterval": 140,
-    "maxInterval": 300,
+    "minInterval": 55,
+    "maxInterval": 110,
     "minVolume": 0.86,
     "maxVolume": 1.06,
     "panRange": [
@@ -494,8 +502,8 @@ export const categories: SoundCategory[] = [
         "originalFile": "freesound_community-nail-clippers-36768.mp3"
       }
     ],
-    "minInterval": 360,
-    "maxInterval": 660,
+    "minInterval": 110,
+    "maxInterval": 180,
     "minVolume": 0.86,
     "maxVolume": 1.06,
     "panRange": [
@@ -505,7 +513,11 @@ export const categories: SoundCategory[] = [
     "enabledByDefault": true,
     "defaultVolume": 0.25,
     "densityCost": 1.4,
-    "prominent": true
+    "prominent": true,
+    "initialDelay": [
+      65,
+      95
+    ]
   },
   {
     "id": "finger-tapping",
@@ -541,8 +553,8 @@ export const categories: SoundCategory[] = [
         "originalFile": "freesound_community-tapping-fingers-nervously-86163.mp3"
       }
     ],
-    "minInterval": 130,
-    "maxInterval": 310,
+    "minInterval": 45,
+    "maxInterval": 100,
     "minVolume": 0.86,
     "maxVolume": 1.06,
     "panRange": [
@@ -570,8 +582,8 @@ export const categories: SoundCategory[] = [
         "originalFile": "u_a4gfvwagf1-zipper-sound-effect-336780.mp3"
       }
     ],
-    "minInterval": 170,
-    "maxInterval": 360,
+    "minInterval": 65,
+    "maxInterval": 130,
     "minVolume": 0.86,
     "maxVolume": 1.06,
     "panRange": [

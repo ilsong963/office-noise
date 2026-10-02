@@ -30,12 +30,16 @@ it.each([false, true])('keeps natural overlap and density limits with animation 
     vi.spyOn(Math, 'random').mockImplementation(() => { random = (1664525 * random + 1013904223) >>> 0; return random / 2 ** 32 })
     let last = Date.now(), count = 0, overlapMs = 0, silenceMs = 0, max = 0, prominentMax = 0
     const update = (now: number) => { if (count >= 2) overlapMs += now - last; if (count === 0) silenceMs += now - last; last = now }
+    const first = new Map<string, number>(), startedAt = Date.now()
     const engine = new OfficeEngine(categories, { ...defaults(), animationEnabled }, state => {
+      for (const id of state.active) if (!first.has(id)) first.set(id, Date.now() - startedAt)
       update(Date.now()); count = state.active.length; max = Math.max(max, count)
       prominentMax = Math.max(prominentMax, categories.filter(c => c.prominent && state.active.includes(c.id)).length)
     })
     await engine.start(); await vi.advanceTimersByTimeAsync(600000); update(Date.now())
     stats.push({ seed, overlap: +(overlapMs / 600000).toFixed(3), silence: +(silenceMs / 600000).toFixed(3), max })
+    expect(first.size).toBe(categories.length)
+    expect(Math.max(...first.values())).toBeLessThan(300000)
     expect(max).toBeLessThanOrEqual(4); expect(prominentMax).toBeLessThanOrEqual(1)
     engine.dispose(); await vi.advanceTimersByTimeAsync(100)
   }
@@ -43,7 +47,8 @@ it.each([false, true])('keeps natural overlap and density limits with animation 
   // Verify overlap is sustained over a session, rather than merely one coincidental event.
   for (const result of stats) {
     expect(result.overlap).toBeGreaterThan(0.2)
-    expect(result.overlap).toBeLessThan(0.45)
+    // More varied effects now occupy up to 60% of the session with overlapping sound.
+    expect(result.overlap).toBeLessThan(0.6)
     expect(result.silence).toBeGreaterThan(0.08)
   }
 })

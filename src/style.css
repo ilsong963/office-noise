@@ -13,3 +13,17 @@
 .occupancy-endpoints { display: flex; justify-content: space-between; color: #aaa; font-size: 10px; }
 .office-occupancy p { margin: 15px 0 0; color: #888; font-size: 11px; }
 .office-occupancy strong { color: #555; font-weight: 500; }
+
+/* Scroll the whole panel so the sound list cannot collapse on short screens. */
+.right-panel > * { flex-shrink: 0; }
+.sound-list { flex: 0 0 auto; overflow: visible; min-height: auto; padding-right: 0; }
+.sound-row { border-top: 1px solid #f2f2f2; padding: 0 0 13px; }
+.sound-row .sound-option { border: 0; padding: 13px 0 10px; }
+.sound-frequency { display: flex; gap: 3px; padding: 3px; border-radius: 6px; background: #f6f6f6; }
+.sound-frequency button { flex: 1; padding: 7px 2px; border-radius: 4px; font-size: 11px; color: #999; }
+.sound-frequency button[aria-pressed=true] { background: #fff; color: #444; box-shadow: 0 1px 3px #00000008; }
+.sound-interval { display: block; margin-top: 7px; color: #999; font-size: 10px; font-variant-numeric: tabular-nums; }
+.sound-hint { margin: 0 0 12px; font-size: 10px; line-height: 1.6; color: #999; }
+.sound-error { display: block; margin-top: 7px; font-size: 10px; line-height: 1.5; color: #a65c50; }
+.list-toolbar { margin-bottom: 7px; }
+@media(max-height:600px) { .right-panel .panel-heading { margin-bottom: 10px; } .office-occupancy { margin-bottom: 12px; padding-bottom: 12px; } .right-panel .segmented { margin-bottom: 12px; } }
