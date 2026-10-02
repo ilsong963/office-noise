@@ -1,7 +1,7 @@
 import type { PersonalEvent } from '../audio/types'
 
-// Atlas order: idle, hand lifting from mouse, typing A, typing B,
-// mouse right, mouse left, sigh inhale, sigh exhale. Frames are never warped.
+// Atlas order: idle, hand lifting over keys, typing A, typing B,
+// mouse right, mouse left, sigh inhale, sigh exhale. Typing swaps hand layers only.
 export const spriteNames = ['idle', 'reach-keyboard', 'typing-a', 'typing-b', 'mouse-right', 'mouse-left', 'sigh-inhale', 'sigh-exhale'] as const
 
 export function spriteFrame(event: PersonalEvent | undefined, elapsed: number, motionEnabled: boolean) {

@@ -62,6 +62,8 @@ describe('playback lifecycle', () => {
     expect(starts).toBe(before + 1)
   })
   it('retries a failed download and clears its visible error', async () => {
+    // Keep the character's second fetch after the initial error observation.
+    vi.spyOn(Math, 'random').mockReturnValue(0.9)
     let state: EngineState | undefined
     vi.stubGlobal('fetch', vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValue({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) }))
     engine = new OfficeEngine([small], settings, s => { state = s })

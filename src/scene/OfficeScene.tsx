@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { PersonalEvent } from '../audio/types'
 import { spriteFrame, spriteNames } from './spriteTimeline'
 import { characterUrl, type CharacterId } from '../data/characters'
+import { keyboardHandClip, typingFingersClip, typingFingersPosition, spriteLayers, spritePosition } from './spriteLayers'
 
 const labels = { keyboard: '내 자리에서 타이핑하는 중', mouse: '내 자리에서 마우스를 움직이는 중', sigh: '잠깐, 한숨 돌리는 중' }
 export default function OfficeScene({ personal, motionEnabled, character }: { personal?: PersonalEvent; motionEnabled: boolean; character: CharacterId }) {
@@ -30,9 +31,13 @@ export default function OfficeScene({ personal, motionEnabled, character }: { pe
   const current = personal && motionEnabled ? frame : 0
   const cell = ready ? current : 0
   const displayUrl = ready ? atlasUrl : loadedUrl || characterUrl('male-sparse')
-  const column = cell % 4, row = Math.floor(cell / 4)
+  const layers = spriteLayers(cell)
   return <div className="room-scene" data-character={character} data-personal-action={personal?.kind ?? 'idle'} data-motion={!motionEnabled ? 'reduced' : ready ? 'ready' : 'fallback'} data-sprite-frame={spriteNames[current]}>
-    <div className="office-sprite-stage" role="img" aria-label="흰 여백 가운데 책상, 의자, 얇은 모니터와 직원 한 명의 뒷모습. 키보드 오른쪽에 마우스가 놓여 있습니다."><div className="office-sprite-pose" style={{ backgroundImage: `url("${displayUrl}")`, backgroundPosition: `${column / 3 * 100}% ${row * 100}%` }}/></div>
+    <div className="office-sprite-stage" role="img" aria-label="흰 여백 가운데 책상, 의자, 얇은 모니터와 직원 한 명의 뒷모습. 키보드 오른쪽에 마우스가 놓여 있습니다.">
+      <div className="office-sprite-pose office-sprite-body" data-cell={layers.scene} style={{ backgroundImage: `url("${displayUrl}")`, backgroundPosition: spritePosition(layers.scene) }}/>
+      {layers.hand !== undefined && <div className="office-sprite-pose office-sprite-hand" data-cell={layers.hand} style={{ backgroundImage: `url("${displayUrl}")`, backgroundPosition: spritePosition(layers.hand), clipPath: keyboardHandClip }}/>}
+      {layers.fingers !== undefined && <div className="office-sprite-pose office-sprite-fingers" data-cell={layers.fingers} style={{ backgroundImage: `url("${displayUrl}")`, backgroundPosition: typingFingersPosition, clipPath: typingFingersClip }}/>}
+    </div>
     <span className="sr-only" aria-live="polite">{personal ? labels[personal.kind] : ''}</span>
   </div>
 }
