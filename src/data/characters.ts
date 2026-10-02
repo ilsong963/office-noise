@@ -1,9 +1,9 @@
 export const characters = [
-  { id: 'female-bob', gender: 'female', name: '단발', asset: 'office-female-bob-v4.png' },
-  { id: 'female-long', gender: 'female', name: '긴머리', asset: 'office-female-long-v4.png' },
-  { id: 'male-sparse', gender: 'male', name: '3가닥', asset: 'office-male-sparse-v4.png' },
-  { id: 'male-short', gender: 'male', name: '짧은머리', asset: 'office-male-short-v4.png' },
-  { id: 'male-taper', gender: 'male', name: '상고머리', asset: 'office-male-taper-v4.png' },
+  { id: 'female-bob', gender: 'female', name: '단발', asset: 'office-female-bob-v5.png' },
+  { id: 'female-long', gender: 'female', name: '긴머리', asset: 'office-female-long-v5.png' },
+  { id: 'male-sparse', gender: 'male', name: '3가닥', asset: 'office-male-sparse-v5.png' },
+  { id: 'male-short', gender: 'male', name: '짧은머리', asset: 'office-male-short-v5.png' },
+  { id: 'male-taper', gender: 'male', name: '상고머리', asset: 'office-male-taper-v5.png' },
 ] as const
 export type CharacterId = typeof characters[number]['id']
 export function loadCharacter(): CharacterId {
