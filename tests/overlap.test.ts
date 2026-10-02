@@ -18,7 +18,7 @@ class Context {
   async decodeAudioData(data: ArrayBuffer) { const duration = new Float64Array(data)[0]; return { duration, length: duration * 22050, numberOfChannels: 1 } }
 }
 afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); vi.useRealTimers() })
-it.each([false, true])('keeps natural overlap and density limits with character sound %s', async (personalEvents) => {
+it.each([false, true])('keeps natural overlap and density limits with animation %s', async (animationEnabled) => {
   vi.useFakeTimers(); vi.stubGlobal('AudioContext', Context)
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     const file = categories.flatMap(c => c.soundFiles).find(f => url.endsWith(f.file))!
@@ -30,11 +30,11 @@ it.each([false, true])('keeps natural overlap and density limits with character 
     vi.spyOn(Math, 'random').mockImplementation(() => { random = (1664525 * random + 1013904223) >>> 0; return random / 2 ** 32 })
     let last = Date.now(), count = 0, overlapMs = 0, silenceMs = 0, max = 0, prominentMax = 0
     const update = (now: number) => { if (count >= 2) overlapMs += now - last; if (count === 0) silenceMs += now - last; last = now }
-    const engine = new OfficeEngine(categories, { ...defaults(), personalEvents }, state => {
+    const engine = new OfficeEngine(categories, { ...defaults(), animationEnabled }, state => {
       update(Date.now()); count = state.active.length; max = Math.max(max, count)
       prominentMax = Math.max(prominentMax, categories.filter(c => c.prominent && state.active.includes(c.id)).length)
     })
-    engine.startMotion(); await engine.start(); await vi.advanceTimersByTimeAsync(600000); update(Date.now())
+    await engine.start(); await vi.advanceTimersByTimeAsync(600000); update(Date.now())
     stats.push({ seed, overlap: +(overlapMs / 600000).toFixed(3), silence: +(silenceMs / 600000).toFixed(3), max })
     expect(max).toBeLessThanOrEqual(4); expect(prominentMax).toBeLessThanOrEqual(1)
     engine.dispose(); await vi.advanceTimersByTimeAsync(100)
@@ -65,7 +65,7 @@ it('increasing occupancy produces more sustained overlap without exceeding its c
       expect(count).toBeLessThanOrEqual(people)
       expect(categories.filter(c => c.prominent && state.active.includes(c.id)).length).toBeLessThanOrEqual(1)
     })
-    engine.startMotion(); await engine.start(); await vi.advanceTimersByTimeAsync(600000); update()
+    await engine.start(); await vi.advanceTimersByTimeAsync(600000); update()
     results.push({ people, overlap: overlap / 600000, max })
     engine.dispose(); await vi.advanceTimersByTimeAsync(100)
   }

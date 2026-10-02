@@ -1,7 +1,7 @@
 import { DEFAULT_PEOPLE, normalizePeople } from '../audio/crowd'
 import { categories } from './sounds'
 import type { MixerSettings } from '../audio/types'
-export const defaults = (): MixerSettings => ({ master: 0.65, personalEvents: true, officePeople: DEFAULT_PEOPLE, channels: Object.fromEntries(categories.map(c => [c.id, { enabled: c.enabledByDefault, volume: c.defaultVolume }])) })
+export const defaults = (): MixerSettings => ({ master: 0.65, animationEnabled: true, officePeople: DEFAULT_PEOPLE, channels: Object.fromEntries(categories.map(c => [c.id, { enabled: c.enabledByDefault, volume: c.defaultVolume }])) })
 const volume = (v: unknown, fallback: number) => typeof v === 'number' && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : fallback
 export function restore(raw: string | null): MixerSettings {
   const result = defaults()
@@ -10,7 +10,7 @@ export function restore(raw: string | null): MixerSettings {
     if (!data || typeof data !== 'object') return result
     result.officePeople = normalizePeople(data.officePeople)
     result.master = volume(data.master, result.master)
-    if (typeof data.personalEvents === 'boolean') result.personalEvents = data.personalEvents
+    if (typeof data.animationEnabled === 'boolean') result.animationEnabled = data.animationEnabled
     for (const c of categories) {
       const legacy: Record<string, string> = { water: 'drink', sigh: 'breath', 'phone-vibration': 'phone', 'nail-clipper': 'clipper', 'finger-tapping': 'fingers' }
       const stored = data.channels?.[c.id] ?? data.channels?.[legacy[c.id]]

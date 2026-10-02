@@ -148,72 +148,90 @@ describe('natural mix and source inventory', () => {
 })
 
 
-describe('automatic character motion', () => {
+describe('animation follows playback', () => {
   const quiet = { ...small, initialDelay: [100, 100] as [number, number] }
-  it('moves repeatedly before playback without creating audio', async () => {
+  it.each([true, false])('stays still before playback when animation is %s', async animationEnabled => {
     const events = new Set<number>()
-    engine = new OfficeEngine([quiet], settings, s => { if (s.personal) events.add(s.personal.id) })
-    engine.startMotion()
+    engine = new OfficeEngine([quiet], { ...settings, animationEnabled }, s => { if (s.personal) events.add(s.personal.id) })
+    engine.update({ ...settings, animationEnabled: !animationEnabled })
     await vi.advanceTimersByTimeAsync(30000)
-    expect(events.size).toBeGreaterThan(2)
-    expect(starts).toBe(0)
-    expect(fetch).not.toHaveBeenCalled()
+    expect(events.size).toBe(0); expect(starts).toBe(0); expect(fetch).not.toHaveBeenCalled()
   })
-  it('keeps moving with character sound OFF while ambient audio continues', async () => {
+  it('plays sounds while keeping the character still when OFF', async () => {
     const events = new Set<number>()
-    engine = new OfficeEngine([small], { ...settings, personalEvents: false }, s => { if (s.personal) events.add(s.personal.id) })
-    engine.startMotion(); await engine.start()
-    await vi.advanceTimersByTimeAsync(30000)
-    expect(events.size).toBeGreaterThan(2); expect(starts).toBeGreaterThan(10)
+    engine = new OfficeEngine([small], { ...settings, animationEnabled: false }, s => { if (s.personal) events.add(s.personal.id) })
+    await engine.start(); await vi.advanceTimersByTimeAsync(30000)
+    expect(events.size).toBe(0); expect(starts).toBeGreaterThan(10)
   })
-  it('uses the real sound duration and hand lead-in when ON', async () => {
+  it('synchronizes movement with the real sound after playback starts', async () => {
     let state: EngineState | undefined
     engine = new OfficeEngine([quiet], settings, s => { state = s })
-    engine.startMotion(); await engine.start()
-    await vi.advanceTimersByTimeAsync(1200)
+    await engine.start(); await vi.advanceTimersByTimeAsync(1200)
     expect(starts).toBe(1)
     expect(state?.personal).toMatchObject({ kind: 'keyboard', soundOffset: .55, soundDuration: .5, duration: 1.55 })
     expect(state?.active).toEqual(['keyboard'])
   })
-  it('does not cut the current animation when its sound is switched OFF or paused', async () => {
+  it('switches only the visual state mid-action without interrupting audio', async () => {
     let state: EngineState | undefined
     engine = new OfficeEngine([quiet], settings, s => { state = s })
-    engine.startMotion(); await engine.start()
-    await vi.advanceTimersByTimeAsync(1200)
+    await engine.start(); await vi.advanceTimersByTimeAsync(1200)
     const event = state?.personal
-    engine.update({ ...settings, personalEvents: false })
-    expect(state?.personal).toBe(event); expect(state?.active).toEqual([])
-    engine.pause()
-    expect(state?.personal).toBe(event); expect(state?.playing).toBe(false)
-    const before = starts
-    await vi.advanceTimersByTimeAsync(30000)
-    expect(starts).toBe(before)
-    expect(state?.personal?.id ?? 2).not.toBe(event?.id)
+    engine.update({ ...settings, animationEnabled: false })
+    expect(state?.personal).toBeUndefined(); expect(state?.active).toEqual(['keyboard'])
+    expect(state?.playing).toBe(true); expect(starts).toBe(1)
+    engine.update({ ...settings, animationEnabled: true })
+    expect(state?.personal).toBe(event); expect(starts).toBe(1)
   })
-  it('does not play a late character download after sound OFF', async () => {
+  it.each([true, false])('stops all motion on pause and only resumes with playback, preference %s', async animationEnabled => {
+    let state: EngineState | undefined
+    const events = new Set<number>()
+    engine = new OfficeEngine([quiet], { ...settings, animationEnabled }, s => { state = s; if (s.personal) events.add(s.personal.id) })
+    await engine.start(); await vi.advanceTimersByTimeAsync(1200)
+    engine.pause()
+    expect(state?.personal).toBeUndefined(); expect(state?.active).toEqual([])
+    const before = starts, eventCount = events.size
+    engine.update({ ...settings, animationEnabled: true })
+    await vi.advanceTimersByTimeAsync(30000)
+    expect(starts).toBe(before); expect(events.size).toBe(eventCount)
+    expect(state?.playing).toBe(false); expect(state?.personal).toBeUndefined()
+    await engine.start(); await vi.advanceTimersByTimeAsync(1200)
+    expect(state?.personal).toBeDefined(); expect(state?.playing).toBe(true)
+  })
+  it('does not animate a late character download after animation OFF, while audio continues', async () => {
     let finish!: (value: unknown) => void
     vi.stubGlobal('fetch', () => new Promise(resolve => { finish = resolve }))
     let state: EngineState | undefined
     engine = new OfficeEngine([quiet], settings, s => { state = s })
-    engine.startMotion(); await engine.start(); await vi.advanceTimersByTimeAsync(1200)
-    engine.update({ ...settings, personalEvents: false })
+    await engine.start(); await vi.advanceTimersByTimeAsync(1200)
+    engine.update({ ...settings, animationEnabled: false })
     finish({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) })
     await vi.advanceTimersByTimeAsync(1)
-    expect(starts).toBe(0); expect(state?.personal?.kind).toBe('keyboard')
+    expect(starts).toBe(1); expect(state?.personal).toBeUndefined()
+  })
+  it('cancels a pending character event after pause', async () => {
+    let finish!: (value: unknown) => void
+    vi.stubGlobal('fetch', () => new Promise(resolve => { finish = resolve }))
+    let state: EngineState | undefined
+    engine = new OfficeEngine([quiet], settings, s => { state = s })
+    await engine.start(); await vi.advanceTimersByTimeAsync(1200); engine.pause()
+    finish({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) })
+    await vi.advanceTimersByTimeAsync(30000)
+    expect(starts).toBe(0); expect(state?.personal).toBeUndefined()
   })
   it('disposes pending character work without another sound or animation', async () => {
     let finish!: (value: unknown) => void
     vi.stubGlobal('fetch', () => new Promise(resolve => { finish = resolve }))
     const notify = vi.fn()
     engine = new OfficeEngine([quiet], settings, notify)
-    engine.startMotion(); await engine.start(); await vi.advanceTimersByTimeAsync(1200)
+    await engine.start(); await vi.advanceTimersByTimeAsync(1200)
     engine.dispose(); const calls = notify.mock.calls.length
     finish({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) })
     await vi.advanceTimersByTimeAsync(30000)
     expect(starts).toBe(0); expect(notify).toHaveBeenCalledTimes(calls)
     engine = undefined
   })
-  it('persists the sound choice independently of motion', () => {
-    expect(restore('{"personalEvents":false}').personalEvents).toBe(false)
+  it('persists the new animation choice without importing the removed sound preference', () => {
+    expect(restore('{"animationEnabled":false}').animationEnabled).toBe(false)
+    expect(restore('{"personalEvents":false,"characterMotion":false}').animationEnabled).toBe(true)
   })
 })

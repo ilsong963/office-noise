@@ -23,7 +23,6 @@ export default function App() {
   useEffect(() => {
     const instance = new OfficeEngine(categories, settingsRef.current, setState)
     engine.current = instance
-    instance.startMotion()
     return () => { instance.dispose(); engine.current = null }
   }, [])
   useEffect(() => {
@@ -58,7 +57,7 @@ export default function App() {
   const playing = state.playing
   const crowd = crowdProfile(settings.officePeople)
   return <main className="office-app">
-    <OfficeScene personal={state.personal} motionEnabled={true} character={character}/>
+    <OfficeScene personal={state.personal} motionEnabled={state.playing && settings.animationEnabled !== false} character={character}/>
     <button className="edge-button edge-left" aria-label="캐릭터 패널 열기" aria-expanded={leftOpen} aria-controls="character-panel" onClick={() => { setLeftOpen(true); if (window.innerWidth <= 700) setRightOpen(false) }}><UserRound size={19}/></button>
     <button className="edge-button edge-right" aria-label="소리 패널 열기" aria-expanded={rightOpen} aria-controls="sound-panel" onClick={() => { setRightOpen(true); if (window.innerWidth <= 700) setLeftOpen(false) }}><SlidersHorizontal size={19}/></button>
     <aside id="character-panel" className={`side-panel left-panel ${leftOpen ? 'is-open' : ''}`} inert={!leftOpen} aria-hidden={!leftOpen} aria-label="캐릭터">
@@ -66,7 +65,7 @@ export default function App() {
       <div className="segmented" aria-label="성별"><button aria-pressed={gender === 'female'} onClick={() => setCharacter('female-bob')}>여자</button><button aria-pressed={gender === 'male'} onClick={() => setCharacter('male-sparse')}>남자</button></div>
       <div className="hair-options">{characters.filter(c => c.gender === gender).map(c => <button key={c.id} className="hair-card" aria-pressed={character === c.id} onClick={() => setCharacter(c.id)}><span className="hair-preview" style={{ backgroundImage: `url("${characterUrl(c.id)}")` }}/><span>{c.name}</span>{character === c.id && <Check size={13}/>}</button>)}</div>
 
-      <div className="character-sound"><span>캐릭터 소리</span><button className="sound-switch" role="switch" aria-label="캐릭터 소리" aria-checked={settings.personalEvents !== false} onClick={() => setSettings(s => ({ ...s, personalEvents: s.personalEvents === false }))}><span>{settings.personalEvents !== false ? 'ON' : 'OFF'}</span><i/></button></div>
+      <div className="character-animation"><span>애니메이션</span><button className="animation-switch" role="switch" aria-label="애니메이션" aria-checked={settings.animationEnabled !== false} onClick={() => setSettings(s => ({ ...s, animationEnabled: s.animationEnabled === false }))}><span>{settings.animationEnabled !== false ? 'ON' : 'OFF'}</span><i/></button></div>
     </aside>
     <aside id="sound-panel" className={`side-panel right-panel ${rightOpen ? 'is-open' : ''}`} inert={!rightOpen} aria-hidden={!rightOpen} aria-label="소리">
       <div className="panel-heading"><h2>소리</h2><button className="icon-button" aria-label="소리 패널 닫기" onClick={() => setRightOpen(false)}><X size={18}/></button></div>

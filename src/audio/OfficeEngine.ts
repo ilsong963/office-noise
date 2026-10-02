@@ -35,7 +35,7 @@ export class OfficeEngine {
   constructor(private categories: SoundCategory[], settings: MixerSettings, private notify: (state: EngineState) => void) {
     this.settings = structuredClone(settings)
   }
-  private emit() { this.notify({ playing: this.running, active: [...new Set([...this.voices].map(v => v.category.id))], errors: { ...this.errors }, personal: this.personal }) }
+  private emit() { this.notify({ playing: this.running, active: [...new Set([...this.voices].map(v => v.category.id))], errors: { ...this.errors }, personal: this.running && this.settings.animationEnabled !== false ? this.personal : undefined }) }
   private initialize() {
     if (this.context) return
     const ctx = new AudioContext({ latencyHint: 'playback' })
@@ -73,10 +73,12 @@ export class OfficeEngine {
       if (!this.settings.channels[c.id].enabled) continue
       this.schedule(c, this.activityDelay(c, c.initialDelay ? between(...c.initialDelay) : naturalDelay(c.minInterval, c.maxInterval)))
     }
+    this.startMotion()
     this.emit()
   }
   pause() {
     this.running = false
+    this.stopMotion()
     const epoch = ++this.epoch
     for (const timer of this.timers.values()) clearTimeout(timer)
     this.timers.clear()
@@ -92,9 +94,6 @@ export class OfficeEngine {
     this.settings = structuredClone(settings)
     const now = this.context?.currentTime ?? 0
     this.master?.gain.setTargetAtTime(settings.master * MASTER_BOOST, now, 0.04)
-    if (old.personalEvents !== false && settings.personalEvents === false) {
-      for (const voice of [...this.voices]) if (voice.personal) { this.stopVoice(voice); this.next(voice.category) }
-    }
     for (const c of this.categories) {
       const channel = settings.channels[c.id]
       this.channelGains.get(c.id)?.gain.setTargetAtTime(channel.volume, now, 0.04)
@@ -192,11 +191,17 @@ export class OfficeEngine {
       this.emit()
     }
   }
-  // The visual clock runs even before the first audio gesture or while paused.
-  startMotion() {
-    if (this.motionEnabled) return
+  // Desk events belong to playback. The animation preference only controls their visuals.
+  private startMotion() {
+    if (!this.running || this.motionEnabled) return
     this.motionEnabled = true
     this.scheduleMotion(between(0.4, 1.2))
+  }
+  private stopMotion() {
+    this.motionEnabled = false
+    this.motionGeneration++
+    clearTimeout(this.motionTimer)
+    this.personal = undefined
   }
   private scheduleMotion(seconds: number) {
     clearTimeout(this.motionTimer)
@@ -224,7 +229,7 @@ export class OfficeEngine {
     const kind: PersonalAction = Date.now() >= this.sighAfter && this.previousAction && Math.random() < 0.08
       ? 'sigh' : this.previousAction === 'keyboard' ? 'mouse' : 'keyboard'
     const c = this.categories.find(category => category.id === kind)
-    const canSound = () => this.running && this.settings.personalEvents !== false && !!c &&
+    const canSound = () => this.running && !!c &&
       this.settings.channels[c.id].enabled && this.settings.channels[c.id].volume > 0 && this.settings.master > 0 &&
       canPlay(c, [...this.voices].map(v => v.category), this.context!.currentTime, this.prominentAfter, this.settings.officePeople)
     const epoch = this.epoch
@@ -295,10 +300,6 @@ export class OfficeEngine {
     this.voices.delete(voice)
   }
   dispose() {
-    this.motionEnabled = false
-    this.motionGeneration++
-    clearTimeout(this.motionTimer)
-    this.personal = undefined
     this.pause()
     if (this.context) { this.context.onstatechange = null; void this.context.close() }
     this.cache.clear()
