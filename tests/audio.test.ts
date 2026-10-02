@@ -77,6 +77,38 @@ describe('playback lifecycle', () => {
     expect(starts).toBeGreaterThan(100); expect(max).toBe(4)
   })
 })
+describe('office occupancy', () => {
+  it('restores and bounds saved occupancy, including older settings', () => {
+    expect(restore(null).officePeople).toBe(4)
+    expect(restore('{"officePeople":6}').officePeople).toBe(6)
+    expect(restore('{"officePeople":0}').officePeople).toBe(1)
+    expect(restore('{"officePeople":99}').officePeople).toBe(8)
+    expect(restore('{"officePeople":2.7}').officePeople).toBe(3)
+    expect(restore('{"officePeople":"bad"}').officePeople).toBe(4)
+  })
+  it('caps active sounds immediately when reducing occupancy, including pending schedules', async () => {
+    const list = Array.from({ length: 8 }, (_, i) => ({ ...small, id: `desk-${i}`, densityCost: .6, initialDelay: [.01, .01] as [number, number] }))
+    const mix = { master: .5, officePeople: 8, channels: Object.fromEntries(list.map(c => [c.id, { enabled: true, volume: .5 }])) }
+    let active = 0, observedLimit = 8, maxAfter = 0
+    engine = new OfficeEngine(list, mix, state => {
+      active = state.active.length
+      if (observedLimit === 1) maxAfter = Math.max(maxAfter, active)
+    })
+    await engine.start(); await vi.advanceTimersByTimeAsync(100)
+    expect(active).toBe(8)
+    observedLimit = 1
+    engine.update({ ...mix, officePeople: 1 })
+    expect(active).toBe(1)
+    await vi.advanceTimersByTimeAsync(30000)
+    expect(maxAfter).toBe(1)
+  })
+  it('lets a solo office play a strong effect without increasing their overlap', () => {
+    const printer = categories.find(c => c.id === 'printer')!
+    expect(canPlay(printer, [], 100, 0, 1)).toBe(true)
+    expect(canPlay(small, [printer], 100, 0, 1)).toBe(false)
+    expect(canPlay({ ...printer, id: 'other-printer' }, [printer], 100, 0, 8)).toBe(false)
+  })
+})
 describe('natural mix and source inventory', () => {
   it('prevents consecutive duplicates and bounds random intervals', () => {
     let previous: string | undefined

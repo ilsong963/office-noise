@@ -5,3 +5,11 @@
 .sound-switch i { width: 15px; height: 15px; border-radius: 50%; background: #c8c8c4; }
 .sound-switch[aria-checked="true"] { color: #444; background: #fff; }
 .sound-switch[aria-checked="true"] i { background: #51564f; }
+
+.office-occupancy { margin: 0 0 22px; padding-bottom: 20px; border-bottom: 1px solid #efefed; flex-shrink: 0; }
+.occupancy-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 12px; }
+.occupancy-heading output { color: #444; font-variant-numeric: tabular-nums; }
+.office-occupancy input[type=range] { width: 100%; height: 20px; margin: 0; background: linear-gradient(#e6e6e6,#e6e6e6) center / 100% 2px no-repeat; }
+.occupancy-endpoints { display: flex; justify-content: space-between; color: #aaa; font-size: 10px; }
+.office-occupancy p { margin: 15px 0 0; color: #888; font-size: 11px; }
+.office-occupancy strong { color: #555; font-weight: 500; }

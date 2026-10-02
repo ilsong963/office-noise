@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check, Pause, Play, Shuffle, SlidersHorizontal, UserRound, Volume2, X } from 'lucide-react'
 import OfficeScene from './scene/OfficeScene'
+import { crowdProfile, MIN_PEOPLE, MAX_PEOPLE } from './audio/crowd'
 import { OfficeEngine } from './audio/OfficeEngine'
 import type { EngineState, MixerSettings } from './audio/types'
 import { categories } from './data/sounds'
@@ -55,6 +56,7 @@ export default function App() {
   }
   const gender = characters.find(c => c.id === character)!.gender
   const playing = state.playing
+  const crowd = crowdProfile(settings.officePeople)
   return <main className="office-app">
     <OfficeScene personal={state.personal} motionEnabled={true} character={character}/>
     <button className="edge-button edge-left" aria-label="캐릭터 패널 열기" aria-expanded={leftOpen} aria-controls="character-panel" onClick={() => { setLeftOpen(true); if (window.innerWidth <= 700) setRightOpen(false) }}><UserRound size={19}/></button>
@@ -68,6 +70,12 @@ export default function App() {
     </aside>
     <aside id="sound-panel" className={`side-panel right-panel ${rightOpen ? 'is-open' : ''}`} inert={!rightOpen} aria-hidden={!rightOpen} aria-label="소리">
       <div className="panel-heading"><h2>소리</h2><button className="icon-button" aria-label="소리 패널 닫기" onClick={() => setRightOpen(false)}><X size={18}/></button></div>
+      <div className="office-occupancy">
+        <div className="occupancy-heading"><label htmlFor="office-people">사무실 인원</label><output htmlFor="office-people">{crowd.people}명</output></div>
+        <input id="office-people" type="range" min={MIN_PEOPLE} max={MAX_PEOPLE} step="1" value={crowd.people} aria-valuetext={`${crowd.people}명, 최대 ${crowd.maxVoices}개 소리 동시 재생`} aria-describedby="overlap-limit" onChange={e => setSettings(s => ({ ...s, officePeople: +e.target.value }))}/>
+        <div className="occupancy-endpoints" aria-hidden="true"><span>{MIN_PEOPLE}명</span><span>{MAX_PEOPLE}명</span></div>
+        <p id="overlap-limit">최대 <strong>{crowd.maxVoices}개</strong> 소리 동시 재생</p>
+      </div>
       <div className="segmented"><button aria-pressed={mode === 'auto'} onClick={automatic}><Shuffle size={13}/>자동</button><button aria-pressed={mode === 'custom'} onClick={() => setMode('custom')}>직접 선택</button></div>
       {mode === 'custom' && <>
         <div className="list-toolbar"><button onClick={() => setSettings(s => ({ ...s, channels: Object.fromEntries(categories.map(c => [c.id, { ...s.channels[c.id], enabled: true }])) }))}>모두 켜기</button><button onClick={() => setSettings(s => ({ ...s, channels: Object.fromEntries(categories.map(c => [c.id, { ...s.channels[c.id], enabled: false }])) }))}>모두 끄기</button></div>

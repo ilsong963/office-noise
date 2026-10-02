@@ -1,3 +1,4 @@
+import { crowdProfile } from './crowd'
 import { soundUrl } from './soundUrl'
 import { MASTER_BOOST } from './levels'
 import { between, canPlay, chooseFile, naturalDelay } from './random'
@@ -70,7 +71,7 @@ export class OfficeEngine {
     this.prominentAfter = this.context!.currentTime + between(35, 65)
     for (const c of this.categories) {
       if (!this.settings.channels[c.id].enabled) continue
-      this.schedule(c, c.initialDelay ? between(...c.initialDelay) : naturalDelay(c.minInterval, c.maxInterval))
+      this.schedule(c, this.activityDelay(c, c.initialDelay ? between(...c.initialDelay) : naturalDelay(c.minInterval, c.maxInterval)))
     }
     this.emit()
   }
@@ -108,7 +109,29 @@ export class OfficeEngine {
         this.schedule(c, c.prominent ? naturalDelay(c.minInterval, c.maxInterval) : between(0.5, 4))
       }
     }
+    if (crowdProfile(old.officePeople).people !== crowdProfile(settings.officePeople).people) {
+      const { maxVoices, densityBudget } = crowdProfile(settings.officePeople)
+      let count = 0, cost = 0
+      // Fade excess voices immediately on reduction, preserving our character if possible.
+      const voices = [...this.voices].sort((a, b) => Number(!!b.personal) - Number(!!a.personal))
+      for (const voice of voices) {
+        if (count < maxVoices && cost + voice.category.densityCost <= densityBudget) {
+          count++; cost += voice.category.densityCost
+        } else {
+          this.stopVoice(voice)
+          this.next(voice.category)
+        }
+      }
+      if (this.running) for (const c of this.categories) {
+        if (!c.prominent && !this.failures.has(c.id) && ![...this.voices].some(v => v.category.id === c.id)) {
+          this.schedule(c, this.activityDelay(c, naturalDelay(c.minInterval, c.maxInterval)))
+        }
+      }
+    }
     this.emit()
+  }
+  private activityDelay(c: SoundCategory, seconds: number) {
+    return seconds * (c.prominent ? 1 : crowdProfile(this.settings.officePeople).intervalScale)
   }
   private schedule(c: SoundCategory, seconds: number) {
     clearTimeout(this.timers.get(c.id))
@@ -119,10 +142,10 @@ export class OfficeEngine {
     const burstCount = this.bursts.get(c.id) ?? 0
     if (c.burst && burstCount < c.burst.max - 1 && Math.random() < c.burst.chance) {
       this.bursts.set(c.id, burstCount + 1)
-      this.schedule(c, between(...c.burst.gap))
+      this.schedule(c, this.activityDelay(c, between(...c.burst.gap)))
     } else {
       this.bursts.set(c.id, 0)
-      this.schedule(c, naturalDelay(c.minInterval, c.maxInterval))
+      this.schedule(c, this.activityDelay(c, naturalDelay(c.minInterval, c.maxInterval)))
     }
   }
   private async buffer(file: string): Promise<AudioBuffer> {
@@ -149,7 +172,7 @@ export class OfficeEngine {
     if (!this.running || !this.settings.channels[c.id].enabled) return
     const epoch = this.epoch, revision = this.revision.get(c.id)
     const valid = () => this.running && epoch === this.epoch && revision === this.revision.get(c.id) && this.settings.channels[c.id].enabled
-    const room = () => canPlay(c, [...this.voices].map(v => v.category), this.context!.currentTime, this.prominentAfter)
+    const room = () => canPlay(c, [...this.voices].map(v => v.category), this.context!.currentTime, this.prominentAfter, this.settings.officePeople)
     if (!room() || this.settings.channels[c.id].volume === 0) { this.schedule(c, between(3, 9)); return }
     const file = chooseFile(c.soundFiles, this.previous.get(c.id))
     try {
@@ -203,7 +226,7 @@ export class OfficeEngine {
     const c = this.categories.find(category => category.id === kind)
     const canSound = () => this.running && this.settings.personalEvents !== false && !!c &&
       this.settings.channels[c.id].enabled && this.settings.channels[c.id].volume > 0 && this.settings.master > 0 &&
-      canPlay(c, [...this.voices].map(v => v.category), this.context!.currentTime, this.prominentAfter)
+      canPlay(c, [...this.voices].map(v => v.category), this.context!.currentTime, this.prominentAfter, this.settings.officePeople)
     const epoch = this.epoch
     if (c && canSound()) {
       const files = kind === 'keyboard' ? c.soundFiles.filter(f => !f.file.includes('spacebar')) : c.soundFiles
