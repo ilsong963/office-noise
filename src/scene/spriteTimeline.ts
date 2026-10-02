@@ -1,7 +1,7 @@
 import type { PersonalEvent } from '../audio/types'
 
 // Atlas order: idle, hand lifting over keys, typing A, typing B,
-// mouse right, mouse left, sigh inhale, sigh exhale. Typing swaps hand layers only.
+// mouse right, mouse left, sigh inhale, sigh exhale. Each cell is a complete scene, with no hand overlays.
 export const spriteNames = ['idle', 'reach-keyboard', 'typing-a', 'typing-b', 'mouse-right', 'mouse-left', 'sigh-inhale', 'sigh-exhale'] as const
 
 export function spriteFrame(event: PersonalEvent | undefined, elapsed: number, motionEnabled: boolean) {
