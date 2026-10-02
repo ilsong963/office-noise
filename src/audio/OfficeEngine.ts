@@ -233,13 +233,14 @@ export class OfficeEngine {
       this.settings.channels[c.id].enabled && this.settings.channels[c.id].volume > 0 && this.settings.master > 0 &&
       canPlay(c, [...this.voices].map(v => v.category), this.context!.currentTime, this.prominentAfter, this.settings.officePeople)
     const epoch = this.epoch
+    const revision = c ? this.revision.get(c.id) : undefined
     if (c && canSound()) {
       const files = kind === 'keyboard' ? c.soundFiles.filter(f => !f.file.includes('spacebar')) : c.soundFiles
       const file = chooseFile(files.length ? files : c.soundFiles, this.previous.get(c.id))
       try {
         const buffer = await this.buffer(file.file)
         if (!this.motionEnabled || generation !== this.motionGeneration) return
-        if (epoch === this.epoch && canSound()) {
+        if (epoch === this.epoch && revision === this.revision.get(c.id) && canSound()) {
           clearTimeout(this.timers.get(c.id))
           this.timers.delete(c.id)
           this.previous.set(c.id, file.file)

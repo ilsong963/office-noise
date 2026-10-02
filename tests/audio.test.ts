@@ -38,7 +38,8 @@ describe('playback lifecycle', () => {
     await vi.advanceTimersByTimeAsync(1000)
     expect(starts).toBe(0)
   })
-  it('discards obsolete loads after a category is disabled and enabled', async () => {
+  it('discards obsolete ambient and character loads after a category is disabled and enabled', async () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.1)
     let finish!: (value: unknown) => void
     vi.stubGlobal('fetch', () => new Promise(resolve => { finish = resolve }))
     engine = new OfficeEngine([small], settings, () => {})
