@@ -68,11 +68,3 @@ npm run preview
 내장 ImageGen 도구로 제작했습니다. 원본 장면은 `public/assets/office-scene.jpg`, 3가닥 스프라이트는 `public/assets/office-poses-sheet.png`입니다. 머리 모양별 시트는 같은 폴더의 `office-female-bob.png`, `office-female-long.png`, `office-male-short.png`, `office-male-taper.png`입니다. 각각 4열 × 2행의 자세 프레임을 사용하며 이미지를 늘리거나 휘지 않습니다.
 
 생성 프롬프트는 `IMAGE_PROMPT.txt`, `SPRITE_PROMPT.txt`, `CHARACTER_PROMPTS.txt`에 보관했습니다.
-
-## 사무실 소음 요청
-
-오른쪽 패널 하단의 `사무실 소음 요청`에서 Google Forms의 공식 삽입 폼을 엽니다. 필수 장문 입력란 하나만 있고 이름·이메일을 수집하지 않으며 로그인을 요구하지 않습니다. 입력·제출·성공 확인은 Google Forms가 처리하고 소리 재생은 계속됩니다. 접수 내용은 폼 소유자의 Google Forms 응답 탭에 저장됩니다. 별도 서버나 브라우저에 노출되는 API 키는 없습니다.
-
-- 응답 관리: https://docs.google.com/forms/d/1nlek-SAfpcPo-vedmzMPnjCF_85ZczjHwhyxcQVDfcU/edit (소유자 계정 필요)
-- 공개 접수 주소: `src/data/requests.ts`
-- 응답 결과 요약은 공개하지 않습니다. 폼이 열리지 않으면 새 창으로 열 수 있습니다.

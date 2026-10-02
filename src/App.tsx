@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check, Pause, Play, Shuffle, SlidersHorizontal, UserRound, Volume2, X } from 'lucide-react'
 import OfficeScene from './scene/OfficeScene'
-import SoundRequestDialog from './components/SoundRequestDialog'
 import { crowdProfile, MIN_PEOPLE, MAX_PEOPLE } from './audio/crowd'
 import { OfficeEngine } from './audio/OfficeEngine'
 import type { EngineState, MixerSettings } from './audio/types'
@@ -16,7 +15,6 @@ export default function App() {
   const [gender, setGender] = useState<'female' | 'male'>(() => characters.find(c => c.id === character)!.gender)
   const [leftOpen, setLeftOpen] = useState(false)
   const [rightOpen, setRightOpen] = useState(false)
-  const [requestOpen, setRequestOpen] = useState(false)
   const [mode, setMode] = useState<'auto' | 'custom'>(() => categories.every(c => settings.channels[c.id].enabled === c.enabledByDefault) ? 'auto' : 'custom')
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState('')
@@ -41,7 +39,6 @@ export default function App() {
   }
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
-      if (requestOpen) return
       if (event.key === 'Escape') { setLeftOpen(false); setRightOpen(false); return }
       if (event.code !== 'Space' || event.repeat || event.ctrlKey || event.metaKey || event.altKey) return
       if ((event.target as HTMLElement).closest('input, button, select, textarea, a, summary, [contenteditable="true"]')) return
@@ -83,10 +80,9 @@ export default function App() {
         <div className="list-toolbar"><button onClick={() => setSettings(s => ({ ...s, channels: Object.fromEntries(categories.map(c => [c.id, { ...s.channels[c.id], enabled: true }])) }))}>모두 켜기</button><button onClick={() => setSettings(s => ({ ...s, channels: Object.fromEntries(categories.map(c => [c.id, { ...s.channels[c.id], enabled: false }])) }))}>모두 끄기</button></div>
         <div className="sound-list">{categories.map(c => <label className={`sound-option ${state.active.includes(c.id) ? 'is-active' : ''}`} key={c.id}><span>{c.name}</span><input type="checkbox" checked={settings.channels[c.id].enabled} onChange={e => updateChannel(c.id, { enabled: e.target.checked })}/></label>)}</div>
       </>}
-      <div className="request-entry"><button onClick={() => setRequestOpen(true)}>사무실 소음 요청</button></div>
+
     </aside>
     <div className="transport" aria-label="재생 컨트롤"><button className="transport-play" aria-label={playing ? '전체 사운드 일시정지' : '전체 사운드 시작'} title={playing ? '일시정지' : '재생'} disabled={starting} onClick={() => void toggle()}>{playing ? <Pause size={17}/> : <Play size={17}/>}</button><span className="transport-divider"/><Volume2 size={15} aria-hidden="true"/><input aria-label="전체 볼륨" type="range" min="0" max="100" value={Math.round(settings.master * 100)} onChange={e => setSettings(s => ({ ...s, master: +e.target.value / 100 }))}/></div>
-    <SoundRequestDialog open={requestOpen} onClose={() => setRequestOpen(false)}/>
     {error && <div className="error-toast" role="alert"><span>{error}</span><button className="icon-button" aria-label="오류 닫기" onClick={() => setError('')}><X size={15}/></button></div>}
   </main>
 }
