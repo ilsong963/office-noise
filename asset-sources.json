@@ -1,0 +1,242 @@
+[
+  {
+    "file": "water/water-02-sip.wav",
+    "sourceUrls": [
+      "https://assets.mixkit.co/active_storage/sfx/143/143.wav",
+      "https://mixkit.co/"
+    ],
+    "originalFile": "mixkit-drinking-water-quickly-143.wav",
+    "category": "water",
+    "label": "빠르게 물 마시기"
+  },
+  {
+    "file": "nail-clipper/nail-clipper-01-clip.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2022/03/10/audio_9790f9c72f.mp3?filename=freesound_community-nail-clippers-36768.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "freesound_community-nail-clippers-36768.mp3",
+    "category": "nail-clipper",
+    "label": "손톱깎이"
+  },
+  {
+    "file": "chair/chair-01-squeak.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2022/03/14/audio_552eebbb45.mp3?filename=freesound_community-squeaking-office-chair-67137.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "freesound_community-squeaking-office-chair-67137.mp3",
+    "category": "chair",
+    "label": "의자 삐걱임"
+  },
+  {
+    "file": "paper/paper-01-page-turn.wav",
+    "sourceUrls": [
+      "https://assets.mixkit.co/active_storage/sfx/1101/1101.wav",
+      "https://mixkit.co/"
+    ],
+    "originalFile": "mixkit-single-book-paging-1101.wav",
+    "category": "paper",
+    "label": "페이지 넘기기"
+  },
+  {
+    "file": "printer/printer-02-printing.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2022/03/14/audio_434ccf2814.mp3?filename=freesound_community-es-printer-68850.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "freesound_community-es-printer-68850.mp3",
+    "category": "printer",
+    "label": "프린터 작동 02"
+  },
+  {
+    "file": "sigh/sigh-02-female-distant.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2021/08/09/audio_4489849117.mp3?filename=freesound_community-female-sigh-medium-distance-6853.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "freesound_community-female-sigh-medium-distance-6853.mp3",
+    "category": "sigh",
+    "label": "조금 먼 여성의 한숨"
+  },
+  {
+    "file": "sigh/sigh-04-deep-breath.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2022/03/24/audio_5e2531d9a6.mp3?filename=locrpg-deep-breath-sigh-104109.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "locrpg-deep-breath-sigh-104109.mp3",
+    "category": "sigh",
+    "label": "깊은 숨과 한숨"
+  },
+  {
+    "file": "keyboard/keyboard-02-slow-typing.wav",
+    "sourceUrls": [
+      "https://assets.mixkit.co/active_storage/sfx/2532/2532.wav",
+      "https://mixkit.co/"
+    ],
+    "originalFile": "mixkit-slow-typing-on-a-keyboard-2532.wav",
+    "category": "keyboard",
+    "label": "느린 타이핑"
+  },
+  {
+    "file": "mouse/mouse-01-double-click.wav",
+    "sourceUrls": [
+      "https://assets.mixkit.co/active_storage/sfx/275/275.wav",
+      "https://mixkit.co/"
+    ],
+    "originalFile": "mixkit-fast-double-click-on-mouse-275.wav",
+    "category": "mouse",
+    "label": "마우스 더블 클릭"
+  },
+  {
+    "file": "finger-tapping/finger-tapping-02-nervous.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2022/03/15/audio_fa38dbfa57.mp3?filename=freesound_community-tapping-fingers-nervously-86163.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "freesound_community-tapping-fingers-nervously-86163.mp3",
+    "category": "finger-tapping",
+    "label": "초조한 손가락 두드림"
+  },
+  {
+    "file": "stapler/stapler-01-staple.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c05759a5d6.mp3?filename=freesound_community-stapler-45637.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "freesound_community-stapler-45637.mp3",
+    "category": "stapler",
+    "label": "스테이플러"
+  },
+  {
+    "file": "printer/printer-01-printing.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2025/06/20/audio_823e93caec.mp3?filename=castlegardener-printer-sound-efx-363007.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "castlegardener-printer-sound-efx-363007.mp3",
+    "category": "printer",
+    "label": "프린터 작동 01"
+  },
+  {
+    "file": "keyboard/keyboard-03-spacebar.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2022/03/24/audio_16a8d1ef8b.mp3?filename=freesound_community-tapping-spacebar-102841.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "freesound_community-tapping-spacebar-102841.mp3",
+    "category": "keyboard",
+    "label": "스페이스바"
+  },
+  {
+    "file": "sigh/sigh-03-male.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2021/08/09/audio_7ecd263274.mp3?filename=freesound_community-male-sigh-6763.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "freesound_community-male-sigh-6763.mp3",
+    "category": "sigh",
+    "label": "남성의 한숨"
+  },
+  {
+    "file": "finger-tapping/finger-tapping-01-tap.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2022/03/20/audio_4d80be0bbe.mp3?filename=freesound_community-finger-tapping-97823.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "freesound_community-finger-tapping-97823.mp3",
+    "category": "finger-tapping",
+    "label": "손가락 두드림"
+  },
+  {
+    "file": "sigh/sigh-01-female-short.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2025/12/12/audio_a03113495d.mp3?filename=dragon-studio-female-sigh-450446.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "dragon-studio-female-sigh-450446.mp3",
+    "category": "sigh",
+    "label": "여성의 짧은 한숨"
+  },
+  {
+    "file": "footsteps/footsteps-01-heels.wav",
+    "sourceUrls": [
+      "https://assets.mixkit.co/active_storage/sfx/542/542.wav",
+      "https://mixkit.co/"
+    ],
+    "originalFile": "mixkit-footsteps-on-heels-on-the-pavement-542.wav",
+    "category": "footsteps",
+    "label": "구두 발걸음"
+  },
+  {
+    "file": "keyboard/keyboard-01-typing.wav",
+    "sourceUrls": [
+      "https://assets.mixkit.co/active_storage/sfx/1386/1386.wav",
+      "https://mixkit.co/"
+    ],
+    "originalFile": "mixkit-keyboard-typing-1386.wav",
+    "category": "keyboard",
+    "label": "키보드 타이핑"
+  },
+  {
+    "file": "pen/pen-01-writing.wav",
+    "sourceUrls": [
+      "https://assets.mixkit.co/active_storage/sfx/2370/2370.wav",
+      "https://mixkit.co/"
+    ],
+    "originalFile": "mixkit-fast-signing-with-a-pen-2370.wav",
+    "category": "pen",
+    "label": "펜으로 서명하기"
+  },
+  {
+    "file": "water/water-01-bottle.wav",
+    "sourceUrls": [
+      "https://assets.mixkit.co/active_storage/sfx/144/144.wav",
+      "https://mixkit.co/"
+    ],
+    "originalFile": "mixkit-drinking-water-from-water-bottle-144.wav",
+    "category": "water",
+    "label": "물병으로 마시기"
+  },
+  {
+    "file": "phone-vibration/phone-vibration-01-buzz.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2022/03/19/audio_d99667b856.mp3?filename=freesound_community-phone-vibration-96623.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "freesound_community-phone-vibration-96623.mp3",
+    "category": "phone-vibration",
+    "label": "휴대폰 진동"
+  },
+  {
+    "file": "pen/pen-02-click.wav",
+    "sourceUrls": [
+      "https://assets.mixkit.co/active_storage/sfx/2371/2371.wav",
+      "https://mixkit.co/"
+    ],
+    "originalFile": "mixkit-pen-clicking-twice-2371.wav",
+    "category": "pen",
+    "label": "펜 두 번 클릭"
+  },
+  {
+    "file": "sniff/sniff-01-sniff.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2022/03/17/audio_bb088586c1.mp3?filename=freesound_community-sniff-93949.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "freesound_community-sniff-93949.mp3",
+    "category": "sniff",
+    "label": "코 훌쩍임"
+  },
+  {
+    "file": "zipper/zipper-01-zip.mp3",
+    "sourceUrls": [
+      "https://cdn.pixabay.com/download/audio/2025/05/04/audio_bebef1cb8c.mp3?filename=u_a4gfvwagf1-zipper-sound-effect-336780.mp3",
+      "https://pixabay.com/"
+    ],
+    "originalFile": "u_a4gfvwagf1-zipper-sound-effect-336780.mp3",
+    "category": "zipper",
+    "label": "지퍼 여닫기"
+  }
+]

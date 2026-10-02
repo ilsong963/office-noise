@@ -1,0 +1,194 @@
+[
+  {
+    "category": "keyboard",
+    "categoryName": "키보드",
+    "file": "keyboard/keyboard-03-spacebar.mp3",
+    "label": "스페이스바",
+    "originalFile": "freesound_community-tapping-spacebar-102841.mp3",
+    "sha256": "61e28a516c44826e6804d6a79d9fec37cf054319feb5f65d59535fd3f47f50d7"
+  },
+  {
+    "category": "keyboard",
+    "categoryName": "키보드",
+    "file": "keyboard/keyboard-01-typing.wav",
+    "label": "키보드 타이핑",
+    "originalFile": "mixkit-keyboard-typing-1386.wav",
+    "sha256": "eee8cd293a310f9505a50f80ffb765f6f05035e4a44baddb5138d3ee6548c669"
+  },
+  {
+    "category": "keyboard",
+    "categoryName": "키보드",
+    "file": "keyboard/keyboard-02-slow-typing.wav",
+    "label": "느린 타이핑",
+    "originalFile": "mixkit-slow-typing-on-a-keyboard-2532.wav",
+    "sha256": "c56bc9532de6711aaa440405091718aa07f982d9326f137fa66637e91f36e526"
+  },
+  {
+    "category": "mouse",
+    "categoryName": "마우스",
+    "file": "mouse/mouse-01-double-click.wav",
+    "label": "마우스 더블 클릭",
+    "originalFile": "mixkit-fast-double-click-on-mouse-275.wav",
+    "sha256": "2aadf05f1f1976a132fe72a9ade13b14f1277aaed4f69d4ffd2f5c1f1c9966c7"
+  },
+  {
+    "category": "paper",
+    "categoryName": "종이",
+    "file": "paper/paper-01-page-turn.wav",
+    "label": "페이지 넘기기",
+    "originalFile": "mixkit-single-book-paging-1101.wav",
+    "sha256": "aee109c3ba12c3c62cefd93de0b24b9e507f309a4be6320d927fd39d8b147573"
+  },
+  {
+    "category": "pen",
+    "categoryName": "펜",
+    "file": "pen/pen-01-writing.wav",
+    "label": "펜으로 서명하기",
+    "originalFile": "mixkit-fast-signing-with-a-pen-2370.wav",
+    "sha256": "36b542dafbdb3a34b0981ff66b177c3b4ddf4a409df0e28f1e45fa647d8039b6"
+  },
+  {
+    "category": "pen",
+    "categoryName": "펜",
+    "file": "pen/pen-02-click.wav",
+    "label": "펜 두 번 클릭",
+    "originalFile": "mixkit-pen-clicking-twice-2371.wav",
+    "sha256": "cb9d05c07972e7694e5d3e8e240552701c1248c6d73932190706a1c74439e162"
+  },
+  {
+    "category": "chair",
+    "categoryName": "의자",
+    "file": "chair/chair-01-squeak.mp3",
+    "label": "의자 삐걱임",
+    "originalFile": "freesound_community-squeaking-office-chair-67137.mp3",
+    "sha256": "c9583cd3973020f40e002834f985ae63c4ac66492fe860582c85c8ac2e1f623c"
+  },
+  {
+    "category": "footsteps",
+    "categoryName": "발걸음",
+    "file": "footsteps/footsteps-01-heels.wav",
+    "label": "구두 발걸음",
+    "originalFile": "mixkit-footsteps-on-heels-on-the-pavement-542.wav",
+    "sha256": "58ad0fabb404761972b0d5f5890deb241923faa80876b5036cb63de68d357906"
+  },
+  {
+    "category": "printer",
+    "categoryName": "프린터",
+    "file": "printer/printer-01-printing.mp3",
+    "label": "프린터 작동 01",
+    "originalFile": "castlegardener-printer-sound-efx-363007.mp3",
+    "sha256": "fc772e9a1e454886a2cd5f7dea77c1868cc24495e6edc597fef83a8a48a7de28"
+  },
+  {
+    "category": "printer",
+    "categoryName": "프린터",
+    "file": "printer/printer-02-printing.mp3",
+    "label": "프린터 작동 02",
+    "originalFile": "freesound_community-es-printer-68850.mp3",
+    "sha256": "36238ecba8b1d0cfd32182c339d2fb0cd2ee17f551d280312833417801d86ee4"
+  },
+  {
+    "category": "phone-vibration",
+    "categoryName": "휴대폰 진동",
+    "file": "phone-vibration/phone-vibration-01-buzz.mp3",
+    "label": "휴대폰 진동",
+    "originalFile": "freesound_community-phone-vibration-96623.mp3",
+    "sha256": "511d7b26bb8407b45d5935bf5b13b7823a80370306160843b67ec70f7f59f27f"
+  },
+  {
+    "category": "water",
+    "categoryName": "물 마시기",
+    "file": "water/water-01-bottle.wav",
+    "label": "물병으로 마시기",
+    "originalFile": "mixkit-drinking-water-from-water-bottle-144.wav",
+    "sha256": "13e257e76228d71ef5416206a0490927ccb31550952ae80628214f2b5361d732"
+  },
+  {
+    "category": "water",
+    "categoryName": "물 마시기",
+    "file": "water/water-02-sip.wav",
+    "label": "빠르게 물 마시기",
+    "originalFile": "mixkit-drinking-water-quickly-143.wav",
+    "sha256": "7e7948d1a4383948c80e7488164d7eacf432b67afb2dbc0ee4e62353bcd1457a"
+  },
+  {
+    "category": "sigh",
+    "categoryName": "한숨",
+    "file": "sigh/sigh-01-female-short.mp3",
+    "label": "여성의 짧은 한숨",
+    "originalFile": "dragon-studio-female-sigh-450446.mp3",
+    "sha256": "e680b81c10730c93c762f594cfc3ffae1f2a6e48b33ae55fbc4d3e920344d428"
+  },
+  {
+    "category": "sigh",
+    "categoryName": "한숨",
+    "file": "sigh/sigh-02-female-distant.mp3",
+    "label": "조금 먼 여성의 한숨",
+    "originalFile": "freesound_community-female-sigh-medium-distance-6853.mp3",
+    "sha256": "06bb03248e3b1e303059f89b5feb037148ee2e9628a9b1327dd1bc9db74f4a39"
+  },
+  {
+    "category": "sigh",
+    "categoryName": "한숨",
+    "file": "sigh/sigh-03-male.mp3",
+    "label": "남성의 한숨",
+    "originalFile": "freesound_community-male-sigh-6763.mp3",
+    "sha256": "a4e0a5bbe185fe35377c08b72a8c796b7dc74865e434a7c18bf124b5a3d4a878"
+  },
+  {
+    "category": "sigh",
+    "categoryName": "한숨",
+    "file": "sigh/sigh-04-deep-breath.mp3",
+    "label": "깊은 숨과 한숨",
+    "originalFile": "locrpg-deep-breath-sigh-104109.mp3",
+    "sha256": "443513c998db4123a2e51bc2aeba334ed76273499e4fbb0d7be5941213731d39"
+  },
+  {
+    "category": "sniff",
+    "categoryName": "코 훌쩍임",
+    "file": "sniff/sniff-01-sniff.mp3",
+    "label": "코 훌쩍임",
+    "originalFile": "freesound_community-sniff-93949.mp3",
+    "sha256": "8a95e26dc53e5b72de5306742d706dbd3564e044692f7fd7b65f59c116edc03a"
+  },
+  {
+    "category": "stapler",
+    "categoryName": "스테이플러",
+    "file": "stapler/stapler-01-staple.mp3",
+    "label": "스테이플러",
+    "originalFile": "freesound_community-stapler-45637.mp3",
+    "sha256": "001bdbfdd47fbeea1cf14d1aab4f34491053c86cac89bb85cfd53ad9f8c9067e"
+  },
+  {
+    "category": "nail-clipper",
+    "categoryName": "손톱깎이",
+    "file": "nail-clipper/nail-clipper-01-clip.mp3",
+    "label": "손톱깎이",
+    "originalFile": "freesound_community-nail-clippers-36768.mp3",
+    "sha256": "a3c5f1bd930170ff1b3c68a84a18145d2c7614edd7553c82f66c656942ac9559"
+  },
+  {
+    "category": "finger-tapping",
+    "categoryName": "손가락 두드림",
+    "file": "finger-tapping/finger-tapping-01-tap.mp3",
+    "label": "손가락 두드림",
+    "originalFile": "freesound_community-finger-tapping-97823.mp3",
+    "sha256": "408c79bfeec797f2c3815e45e1512d68b1d04386ee59f398f3d706e70722bf45"
+  },
+  {
+    "category": "finger-tapping",
+    "categoryName": "손가락 두드림",
+    "file": "finger-tapping/finger-tapping-02-nervous.mp3",
+    "label": "초조한 손가락 두드림",
+    "originalFile": "freesound_community-tapping-fingers-nervously-86163.mp3",
+    "sha256": "5a4e0b95d4a987c2783b6d41ce9469bba77e2613d832aa24f031077a1e60ebb6"
+  },
+  {
+    "category": "zipper",
+    "categoryName": "지퍼",
+    "file": "zipper/zipper-01-zip.mp3",
+    "label": "지퍼 여닫기",
+    "originalFile": "u_a4gfvwagf1-zipper-sound-effect-336780.mp3",
+    "sha256": "a76793e2f4e8396a412a53d77c731369351d4fbbc9461ba0108db72c930fd214"
+  }
+]

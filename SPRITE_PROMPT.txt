@@ -1,0 +1,16 @@
+Use case: stylized-concept.
+Asset type: Production animation sprite sheet using the attached image as character, furniture and drawing-style reference.
+Create ONE sprite sheet with EXACTLY FOUR COLUMNS and TWO ROWS, EIGHT equal SQUARE cells, 2:1 overall aspect ratio, preferably 2048x1024. No visible cell boundaries or labels. Opaque pure white background.
+Each square cell shows the entire same seated office employee from behind, simple office chair, plain desk, thin modern flat monitor, keyboard, and a DISTINCT separate computer mouse on the desk to the right of the keyboard. The composition occupies about 80% of each square cell with identical margins. Preserve the attached fine black contour lines, white fills and extremely simple monochrome cartoon drawing.
+CRITICAL REGISTRATION: Treat desk, monitor, chair, legs, torso as a DUPLICATED STATIC BASE across all 8 cells. Their sizes, positions and perspective within every cell must be EXACTLY IDENTICAL. Never stretch, squash, twist, bend or scale the furniture or body. Only the explicitly described small arm/hand pose changes happen, with subtle shoulder/head movement allowed in the last two frames.
+Frames in reading order left to right, first row then second row:
+Frame 0, upper left: idle, RIGHT HAND rests on the separate mouse to the right of the keyboard.
+Frame 1: RIGHT HAND has completely LEFT the mouse and is suspended visibly between mouse and keyboard, moving toward keyboard. Mouse stays on desk, clearly untouched.
+Frame 2: TYPING A. BOTH HANDS are clearly placed on the KEYBOARD. Right elbow/forearm reaches inward toward the keyboard. Mouse clearly visible, EMPTY and UNTOUCHED at the right. No hand touching the mouse.
+Frame 3: TYPING B. BOTH HANDS remain clearly on KEYBOARD with genuinely different finger/wrist pose than previous typing frame. EMPTY UNTOUCHED mouse remains at right, no hand on mouse.
+Frame 4, lower left: right hand grips mouse and pushes it slightly right; ONLY right forearm/hand pose changes. Torso fixed.
+Frame 5: right hand grips mouse and pulls it slightly left; ONLY right forearm/hand pose changes. Torso fixed.
+Frame 6: sigh inhale, shoulders subtly raised and head slightly higher. Keep desk monitor chair torso size fixed.
+Frame 7: sigh exhale, shoulders lower and head dips slightly. Keep desk monitor chair torso size fixed.
+Make typing vs mousing arm locations UNAMBIGUOUS at small size. The right hand MUST be away from mouse in frames 1, 2, 3. Never simply keep hand on mouse in every frame.
+No office background, no ceiling/wall/floor lines, no room, no extra people or objects, no texture, no shadow, no gradient, no colors, no numbers, no words, no borders, no watermark. Uniform aligned 4x2 grid with square cells essential.
