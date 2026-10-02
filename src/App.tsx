@@ -12,6 +12,7 @@ export default function App() {
   const [settings, setSettings] = useState<MixerSettings>(loadSettings)
   const [state, setState] = useState<EngineState>({ playing: false, active: [], errors: {} })
   const [character, setCharacter] = useState<CharacterId>(loadCharacter)
+  const [gender, setGender] = useState<'female' | 'male'>(() => characters.find(c => c.id === character)!.gender)
   const [leftOpen, setLeftOpen] = useState(false)
   const [rightOpen, setRightOpen] = useState(false)
   const [mode, setMode] = useState<'auto' | 'custom'>(() => categories.every(c => settings.channels[c.id].enabled === c.enabledByDefault) ? 'auto' : 'custom')
@@ -53,7 +54,6 @@ export default function App() {
     setMode('auto'); const preset = defaults()
     setSettings(s => ({ ...s, channels: Object.fromEntries(categories.map(c => [c.id, preset.channels[c.id] ?? { ...s.channels[c.id], enabled: false }])) }))
   }
-  const gender = characters.find(c => c.id === character)!.gender
   const playing = state.playing
   const crowd = crowdProfile(settings.officePeople)
   return <main className="office-app">
@@ -62,7 +62,7 @@ export default function App() {
     <button className="edge-button edge-right" aria-label="소리 패널 열기" aria-expanded={rightOpen} aria-controls="sound-panel" onClick={() => { setRightOpen(true); if (window.innerWidth <= 700) setLeftOpen(false) }}><SlidersHorizontal size={19}/></button>
     <aside id="character-panel" className={`side-panel left-panel ${leftOpen ? 'is-open' : ''}`} inert={!leftOpen} aria-hidden={!leftOpen} aria-label="캐릭터">
       <div className="panel-heading"><h2>캐릭터</h2><button className="icon-button" aria-label="캐릭터 패널 닫기" onClick={() => setLeftOpen(false)}><X size={18}/></button></div>
-      <div className="segmented" aria-label="성별"><button aria-pressed={gender === 'female'} onClick={() => setCharacter('female-bob')}>여자</button><button aria-pressed={gender === 'male'} onClick={() => setCharacter('male-sparse')}>남자</button></div>
+      <div className="segmented" aria-label="성별"><button aria-pressed={gender === 'female'} onClick={() => setGender('female')}>여자</button><button aria-pressed={gender === 'male'} onClick={() => setGender('male')}>남자</button></div>
       <div className="hair-options">{characters.filter(c => c.gender === gender).map(c => <button key={c.id} className="hair-card" aria-pressed={character === c.id} onClick={() => setCharacter(c.id)}><span className="hair-preview" style={{ backgroundImage: `url("${characterUrl(c.id)}")` }}/><span>{c.name}</span>{character === c.id && <Check size={13}/>}</button>)}</div>
 
       <div className="character-animation"><span>애니메이션</span><button className="animation-switch" role="switch" aria-label="애니메이션" aria-checked={settings.animationEnabled !== false} onClick={() => setSettings(s => ({ ...s, animationEnabled: s.animationEnabled === false }))}><span>{settings.animationEnabled !== false ? 'ON' : 'OFF'}</span><i/></button></div>
