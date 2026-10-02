@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, Keyboard, Mouse, Pause, Play, Shuffle, SlidersHorizontal, UserRound, Volume2, Wind, X } from 'lucide-react'
+import { Check, Pause, Play, Shuffle, SlidersHorizontal, UserRound, Volume2, X } from 'lucide-react'
 import OfficeScene from './scene/OfficeScene'
 import { OfficeEngine } from './audio/OfficeEngine'
-import type { EngineState, MixerSettings, PersonalAction } from './audio/types'
+import type { EngineState, MixerSettings } from './audio/types'
 import { categories } from './data/sounds'
 import { defaults, loadSettings, storageKey } from './data/settings'
 import { characters, characterUrl, loadCharacter, type CharacterId } from './data/characters'
 
 export default function App() {
-  const [settings, setSettings] = useState<MixerSettings>(() => ({ ...loadSettings(), personalEvents: true }))
+  const [settings, setSettings] = useState<MixerSettings>(loadSettings)
   const [state, setState] = useState<EngineState>({ playing: false, active: [], errors: {} })
   const [character, setCharacter] = useState<CharacterId>(loadCharacter)
   const [leftOpen, setLeftOpen] = useState(false)
@@ -22,6 +22,7 @@ export default function App() {
   useEffect(() => {
     const instance = new OfficeEngine(categories, settingsRef.current, setState)
     engine.current = instance
+    instance.startMotion()
     return () => { instance.dispose(); engine.current = null }
   }, [])
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function App() {
   useEffect(() => { try { localStorage.setItem('office-noise:character', character) } catch { /* Local preferences are optional. */ } }, [character])
   const toggle = async () => {
     if (starting) return
-    if (state.playing || state.personal) { engine.current?.pause(); return }
+    if (state.playing) { engine.current?.pause(); return }
     setStarting(true); setError('')
     try { await engine.current?.start() } catch { setError('재생하지 못했습니다. 다시 눌러주세요.') } finally { setStarting(false) }
   }
@@ -45,10 +46,6 @@ export default function App() {
     window.addEventListener('keydown', listener)
     return () => window.removeEventListener('keydown', listener)
   })
-  const previewPersonal = async (kind: PersonalAction) => {
-    setError('')
-    try { await engine.current?.previewPersonal(kind) } catch { setError('소리를 불러오지 못했습니다.') }
-  }
   const updateChannel = (id: string, update: Partial<MixerSettings['channels'][string]>) => {
     setMode('custom'); setSettings(s => ({ ...s, channels: { ...s.channels, [id]: { ...s.channels[id], ...update } } }))
   }
@@ -57,7 +54,7 @@ export default function App() {
     setSettings(s => ({ ...s, channels: Object.fromEntries(categories.map(c => [c.id, preset.channels[c.id] ?? { ...s.channels[c.id], enabled: false }])) }))
   }
   const gender = characters.find(c => c.id === character)!.gender
-  const playing = state.playing || !!state.personal
+  const playing = state.playing
   return <main className="office-app">
     <OfficeScene personal={state.personal} motionEnabled={true} character={character}/>
     <button className="edge-button edge-left" aria-label="캐릭터 패널 열기" aria-expanded={leftOpen} aria-controls="character-panel" onClick={() => { setLeftOpen(true); if (window.innerWidth <= 700) setRightOpen(false) }}><UserRound size={19}/></button>
@@ -67,7 +64,7 @@ export default function App() {
       <div className="segmented" aria-label="성별"><button aria-pressed={gender === 'female'} onClick={() => setCharacter('female-bob')}>여자</button><button aria-pressed={gender === 'male'} onClick={() => setCharacter('male-sparse')}>남자</button></div>
       <div className="hair-options">{characters.filter(c => c.gender === gender).map(c => <button key={c.id} className="hair-card" aria-pressed={character === c.id} onClick={() => setCharacter(c.id)}><span className="hair-preview" style={{ backgroundImage: `url("${characterUrl(c.id)}")` }}/><span>{c.name}</span>{character === c.id && <Check size={13}/>}</button>)}</div>
 
-      <div className="action-previews">{([{ kind: 'keyboard', label: '타이핑', icon: Keyboard }, { kind: 'mouse', label: '마우스', icon: Mouse }, { kind: 'sigh', label: '한숨', icon: Wind }] as const).map(({ kind, label, icon: Icon }) => <button key={kind} aria-label={`${label} 동작 미리보기`} title={label} onClick={() => void previewPersonal(kind)}><Icon size={17}/></button>)}</div>
+      <div className="character-sound"><span>캐릭터 소리</span><button className="sound-switch" role="switch" aria-label="캐릭터 소리" aria-checked={settings.personalEvents !== false} onClick={() => setSettings(s => ({ ...s, personalEvents: s.personalEvents === false }))}><span>{settings.personalEvents !== false ? 'ON' : 'OFF'}</span><i/></button></div>
     </aside>
     <aside id="sound-panel" className={`side-panel right-panel ${rightOpen ? 'is-open' : ''}`} inert={!rightOpen} aria-hidden={!rightOpen} aria-label="소리">
       <div className="panel-heading"><h2>소리</h2><button className="icon-button" aria-label="소리 패널 닫기" onClick={() => setRightOpen(false)}><X size={18}/></button></div>

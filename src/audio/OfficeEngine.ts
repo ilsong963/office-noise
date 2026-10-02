@@ -1,4 +1,3 @@
-import { canBecomePersonal } from './personalEvents'
 import { soundUrl } from './soundUrl'
 import { MASTER_BOOST } from './levels'
 import { between, canPlay, chooseFile, naturalDelay } from './random'
@@ -22,7 +21,12 @@ export class OfficeEngine {
   private epoch = 0
   private running = false
   private prominentAfter = 0
-  private personalAfter = 0
+  private motionTimer?: ReturnType<typeof setTimeout>
+  private motionEnabled = false
+  private motionGeneration = 0
+  private personal?: PersonalEvent
+  private previousAction?: PersonalAction
+  private sighAfter = 0
   private personalId = 0
   private errors: Record<string, string> = {}
   private settings: MixerSettings
@@ -30,7 +34,7 @@ export class OfficeEngine {
   constructor(private categories: SoundCategory[], settings: MixerSettings, private notify: (state: EngineState) => void) {
     this.settings = structuredClone(settings)
   }
-  private emit() { this.notify({ playing: this.running, active: [...new Set([...this.voices].map(v => v.category.id))], errors: { ...this.errors }, personal: [...this.voices].find(v => v.personal)?.personal }) }
+  private emit() { this.notify({ playing: this.running, active: [...new Set([...this.voices].map(v => v.category.id))], errors: { ...this.errors }, personal: this.personal }) }
   private initialize() {
     if (this.context) return
     const ctx = new AudioContext({ latencyHint: 'playback' })
@@ -64,7 +68,6 @@ export class OfficeEngine {
     if (epoch !== this.epoch) return
     this.running = true
     this.prominentAfter = this.context!.currentTime + between(35, 65)
-    this.personalAfter = this.context!.currentTime + between(18, 36)
     for (const c of this.categories) {
       if (!this.settings.channels[c.id].enabled) continue
       this.schedule(c, c.initialDelay ? between(...c.initialDelay) : naturalDelay(c.minInterval, c.maxInterval))
@@ -156,9 +159,7 @@ export class OfficeEngine {
       this.errors[c.id] && delete this.errors[c.id]
       this.failures.delete(c.id)
       this.previous.set(c.id, file.file)
-      const personal = this.settings.personalEvents !== false && this.settings.master > 0 &&
-        canBecomePersonal(c, this.context!.currentTime, this.personalAfter, [...this.voices].some(v => !!v.personal))
-      this.createVoice(c, file, buffer, personal)
+      this.createVoice(c, file, buffer)
     } catch {
       if (!valid()) return
       this.errors[c.id] = '음원을 불러오지 못했습니다. 잠시 후 다시 시도합니다.'
@@ -168,21 +169,60 @@ export class OfficeEngine {
       this.emit()
     }
   }
-  async previewPersonal(kind: PersonalAction) {
-    // An explicit debug preview is isolated from the ambient session and native file player.
-    this.pause()
-    const epoch = ++this.epoch
+  // The visual clock runs even before the first audio gesture or while paused.
+  startMotion() {
+    if (this.motionEnabled) return
+    this.motionEnabled = true
+    this.scheduleMotion(between(0.4, 1.2))
+  }
+  private scheduleMotion(seconds: number) {
+    clearTimeout(this.motionTimer)
+    if (!this.motionEnabled) return
+    this.motionTimer = setTimeout(() => { void this.animate() }, seconds * 1000)
+  }
+  private showMotion(kind: PersonalAction, soundDuration: number) {
+    const lead = kind === 'sigh' ? 0 : 0.55
+    const tail = kind === 'mouse' ? 0.65 : kind === 'keyboard' ? 0.5 : 0.3
+    this.personal = { id: ++this.personalId, kind, startedAt: performance.now(), duration: lead + soundDuration + tail, soundOffset: lead, soundDuration }
+    this.previousAction = kind
+    if (kind === 'sigh') this.sighAfter = Date.now() + between(75000, 150000)
+    clearTimeout(this.motionTimer)
+    this.motionTimer = setTimeout(() => {
+      this.personal = undefined
+      this.emit()
+      this.scheduleMotion(between(1.2, 4.5))
+    }, this.personal.duration * 1000)
+    this.emit()
+    return this.personal
+  }
+  private async animate() {
+    if (!this.motionEnabled) return
+    const generation = this.motionGeneration
+    const kind: PersonalAction = Date.now() >= this.sighAfter && this.previousAction && Math.random() < 0.08
+      ? 'sigh' : this.previousAction === 'keyboard' ? 'mouse' : 'keyboard'
     const c = this.categories.find(category => category.id === kind)
-    if (!c) return
-    this.initialize()
-    await this.context!.resume()
-    if (epoch !== this.epoch) return
-    const files = kind === 'keyboard' ? c.soundFiles.filter(f => !f.file.includes('spacebar')) : c.soundFiles
-    const file = chooseFile(files.length ? files : c.soundFiles, this.previous.get(c.id))
-    const buffer = await this.buffer(file.file)
-    if (epoch !== this.epoch) return
-    this.previous.set(c.id, file.file)
-    this.createVoice(c, file, buffer, true)
+    const canSound = () => this.running && this.settings.personalEvents !== false && !!c &&
+      this.settings.channels[c.id].enabled && this.settings.channels[c.id].volume > 0 && this.settings.master > 0 &&
+      canPlay(c, [...this.voices].map(v => v.category), this.context!.currentTime, this.prominentAfter)
+    const epoch = this.epoch
+    if (c && canSound()) {
+      const files = kind === 'keyboard' ? c.soundFiles.filter(f => !f.file.includes('spacebar')) : c.soundFiles
+      const file = chooseFile(files.length ? files : c.soundFiles, this.previous.get(c.id))
+      try {
+        const buffer = await this.buffer(file.file)
+        if (!this.motionEnabled || generation !== this.motionGeneration) return
+        if (epoch === this.epoch && canSound()) {
+          clearTimeout(this.timers.get(c.id))
+          this.timers.delete(c.id)
+          this.previous.set(c.id, file.file)
+          this.createVoice(c, file, buffer, true)
+          return
+        }
+      } catch { /* Keep moving silently when a recording cannot be loaded. */ }
+    }
+    if (this.motionEnabled && generation === this.motionGeneration) {
+      this.showMotion(kind, kind === 'keyboard' ? between(4, 9) : kind === 'mouse' ? between(0.7, 1.8) : between(2, 3.5))
+    }
   }
   private createVoice(c: SoundCategory, file: SoundFile, buffer: AudioBuffer, personal = false) {
     const ctx = this.context!, now = ctx.currentTime
@@ -205,8 +245,7 @@ export class OfficeEngine {
     source.connect(gain).connect(pan).connect(this.channelGains.get(c.id)!)
     const voice: Voice = { source, gain, pan, category: c }
     if (personal) {
-      voice.personal = { id: ++this.personalId, kind: c.id as PersonalAction, startedAt: performance.now(), duration: lead + duration + tail, soundOffset: lead, soundDuration: duration }
-      this.personalAfter = now + lead + duration + tail + between(65, 150)
+      voice.personal = this.showMotion(c.id as PersonalAction, duration)
     }
     this.voices.add(voice)
     if (c.prominent) this.prominentAfter = soundStart + duration + between(55, 100)
@@ -233,6 +272,10 @@ export class OfficeEngine {
     this.voices.delete(voice)
   }
   dispose() {
+    this.motionEnabled = false
+    this.motionGeneration++
+    clearTimeout(this.motionTimer)
+    this.personal = undefined
     this.pause()
     if (this.context) { this.context.onstatechange = null; void this.context.close() }
     this.cache.clear()

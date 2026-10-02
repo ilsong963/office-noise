@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { existsSync } from 'node:fs'
 import { OfficeEngine } from '../src/audio/OfficeEngine'
-import { canBecomePersonal } from '../src/audio/personalEvents'
 import { canPlay, chooseFile, naturalDelay } from '../src/audio/random'
 import { categories } from '../src/data/sounds'
 import { restore } from '../src/data/settings'
@@ -11,7 +10,7 @@ class Param { value = 0; setValueAtTime() {} linearRampToValueAtTime() {} setTar
 class Node { gain = new Param(); pan = new Param(); threshold = new Param(); knee = new Param(); ratio = new Param(); attack = new Param(); release = new Param(); connect(node: Node) { return node } disconnect() {} }
 class Source extends Node {
   buffer: unknown; onended: (() => void) | null = null; timer?: ReturnType<typeof setTimeout>
-  start(_when: number, _offset: number, duration: number) { starts++; this.timer = setTimeout(() => this.onended?.(), duration * 1000) }
+  start(_when: number, _offset: number, duration: number) { starts++; this.timer = setTimeout(() => this.onended?.(), Math.max(0, _when - Date.now() / 1000) * 1000 + duration * 1000) }
   stop() { clearTimeout(this.timer); this.onended?.() }
 }
 let starts = 0
@@ -117,52 +116,72 @@ describe('natural mix and source inventory', () => {
 })
 
 
-describe('occasional personal events', () => {
-  it('keeps ordinary surrounding sounds still, including early keyboard sounds', async () => {
-    const events: number[] = []
-    engine = new OfficeEngine([small], settings, s => { if (s.personal) events.push(s.personal.id) })
-    await engine.start(); await vi.advanceTimersByTimeAsync(15000)
-    expect(starts).toBeGreaterThan(0); expect(events).toEqual([])
+describe('automatic character motion', () => {
+  const quiet = { ...small, initialDelay: [100, 100] as [number, number] }
+  it('moves repeatedly before playback without creating audio', async () => {
+    const events = new Set<number>()
+    engine = new OfficeEngine([quiet], settings, s => { if (s.personal) events.add(s.personal.id) })
+    engine.startMotion()
+    await vi.advanceTimersByTimeAsync(30000)
+    expect(events.size).toBeGreaterThan(2)
+    expect(starts).toBe(0)
+    expect(fetch).not.toHaveBeenCalled()
   })
-  it('only assigns eligible sounds, after quiet time, and never overlaps actors', () => {
-    expect(canBecomePersonal(small, 20, 30, false, () => 0)).toBe(false)
-    expect(canBecomePersonal(small, 40, 30, true, () => 0)).toBe(false)
-    expect(canBecomePersonal({ ...small, id: 'printer' }, 40, 30, false, () => 0)).toBe(false)
-    expect(canBecomePersonal(small, 40, 30, false, () => 0)).toBe(true)
+  it('keeps moving with character sound OFF while ambient audio continues', async () => {
+    const events = new Set<number>()
+    engine = new OfficeEngine([small], { ...settings, personalEvents: false }, s => { if (s.personal) events.add(s.personal.id) })
+    engine.startMotion(); await engine.start()
+    await vi.advanceTimersByTimeAsync(30000)
+    expect(events.size).toBeGreaterThan(2); expect(starts).toBeGreaterThan(10)
   })
-  it('respects the opt-out while continuing background audio', async () => {
-    vi.spyOn(Math, 'random').mockReturnValue(0.1)
-    let events = 0
-    engine = new OfficeEngine([small], { ...settings, personalEvents: false }, s => { if (s.personal) events++ })
-    await engine.start(); await vi.advanceTimersByTimeAsync(180000)
-    expect(starts).toBeGreaterThan(10); expect(events).toBe(0)
-  })
-  it('leaves at least 65 seconds between personal events', async () => {
-    vi.spyOn(Math, 'random').mockReturnValue(0.1)
-    const seen = new Map<number, number>()
-    engine = new OfficeEngine([small], settings, s => { if (s.personal && !seen.has(s.personal.id)) seen.set(s.personal.id, Date.now()) })
-    await engine.start(); await vi.advanceTimersByTimeAsync(600000)
-    const times = [...seen.values()]
-    expect(times.length).toBeGreaterThan(1)
-    for (let i = 1; i < times.length; i++) expect(times[i] - times[i - 1]).toBeGreaterThanOrEqual(65000)
-  })
-  it('plays an isolated preview without the pause timer suspending its audio', async () => {
+  it('uses the real sound duration and hand lead-in when ON', async () => {
     let state: EngineState | undefined
-    engine = new OfficeEngine([small], settings, s => { state = s })
-    await engine.previewPersonal('keyboard')
-    expect(state?.playing).toBe(false); expect(state?.personal?.kind).toBe('keyboard'); expect(starts).toBe(1)
-    await vi.advanceTimersByTimeAsync(100)
-    expect(suspends).toBe(0)
-    engine.pause(); expect(state?.personal).toBeUndefined()
-    await vi.advanceTimersByTimeAsync(10000); expect(starts).toBe(1)
+    engine = new OfficeEngine([quiet], settings, s => { state = s })
+    engine.startMotion(); await engine.start()
+    await vi.advanceTimersByTimeAsync(1200)
+    expect(starts).toBe(1)
+    expect(state?.personal).toMatchObject({ kind: 'keyboard', soundOffset: .55, soundDuration: .5, duration: 1.55 })
+    expect(state?.active).toEqual(['keyboard'])
   })
-  it('cancels a pending personal preview when paused before download completion', async () => {
+  it('does not cut the current animation when its sound is switched OFF or paused', async () => {
+    let state: EngineState | undefined
+    engine = new OfficeEngine([quiet], settings, s => { state = s })
+    engine.startMotion(); await engine.start()
+    await vi.advanceTimersByTimeAsync(1200)
+    const event = state?.personal
+    engine.update({ ...settings, personalEvents: false })
+    expect(state?.personal).toBe(event); expect(state?.active).toEqual([])
+    engine.pause()
+    expect(state?.personal).toBe(event); expect(state?.playing).toBe(false)
+    const before = starts
+    await vi.advanceTimersByTimeAsync(30000)
+    expect(starts).toBe(before)
+    expect(state?.personal?.id ?? 2).not.toBe(event?.id)
+  })
+  it('does not play a late character download after sound OFF', async () => {
     let finish!: (value: unknown) => void
     vi.stubGlobal('fetch', () => new Promise(resolve => { finish = resolve }))
-    engine = new OfficeEngine([small], settings, () => {})
-    const request = engine.previewPersonal('keyboard')
-    await vi.advanceTimersByTimeAsync(1); engine.pause()
+    let state: EngineState | undefined
+    engine = new OfficeEngine([quiet], settings, s => { state = s })
+    engine.startMotion(); await engine.start(); await vi.advanceTimersByTimeAsync(1200)
+    engine.update({ ...settings, personalEvents: false })
     finish({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) })
-    await request; expect(starts).toBe(0)
+    await vi.advanceTimersByTimeAsync(1)
+    expect(starts).toBe(0); expect(state?.personal?.kind).toBe('keyboard')
+  })
+  it('disposes pending character work without another sound or animation', async () => {
+    let finish!: (value: unknown) => void
+    vi.stubGlobal('fetch', () => new Promise(resolve => { finish = resolve }))
+    const notify = vi.fn()
+    engine = new OfficeEngine([quiet], settings, notify)
+    engine.startMotion(); await engine.start(); await vi.advanceTimersByTimeAsync(1200)
+    engine.dispose(); const calls = notify.mock.calls.length
+    finish({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) })
+    await vi.advanceTimersByTimeAsync(30000)
+    expect(starts).toBe(0); expect(notify).toHaveBeenCalledTimes(calls)
+    engine = undefined
+  })
+  it('persists the sound choice independently of motion', () => {
+    expect(restore('{"personalEvents":false}').personalEvents).toBe(false)
   })
 })
