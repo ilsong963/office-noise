@@ -28,12 +28,11 @@ export default function OfficeScene({ personal, motionEnabled, character }: { pe
     return () => cancelAnimationFrame(request)
   }, [personal, ready, motionEnabled])
   const current = personal && motionEnabled ? frame : 0
-  // The resting pose keeps the right hand on the mouse (atlas cell 5).
-  const cell = current === 0 ? 5 : current
+  const cell = ready ? current : 0
+  const displayUrl = ready ? atlasUrl : loadedUrl || characterUrl('male-sparse')
   const column = cell % 4, row = Math.floor(cell / 4)
   return <div className="room-scene" data-character={character} data-personal-action={personal?.kind ?? 'idle'} data-motion={!motionEnabled ? 'reduced' : ready ? 'ready' : 'fallback'} data-sprite-frame={spriteNames[current]}>
-    <img src={`${import.meta.env.BASE_URL}assets/office-scene.jpg`} alt="흰 여백 가운데 책상, 의자, 얇은 모니터와 직원 한 명의 뒷모습. 내 자리 이벤트에서는 자세별 그림이 차례로 바뀝니다." fetchPriority="high"/>
-    {ready && <div className="office-sprite-stage" aria-hidden="true"><div className="office-sprite-pose" style={{ backgroundImage: `url("${atlasUrl}")`, backgroundPosition: `${column / 3 * 100}% ${row * 100}%` }}/></div>}
+    <div className="office-sprite-stage" role="img" aria-label="흰 여백 가운데 책상, 의자, 얇은 모니터와 직원 한 명의 뒷모습. 키보드 오른쪽에 마우스가 놓여 있습니다."><div className="office-sprite-pose" style={{ backgroundImage: `url("${displayUrl}")`, backgroundPosition: `${column / 3 * 100}% ${row * 100}%` }}/></div>
     <span className="sr-only" aria-live="polite">{personal ? labels[personal.kind] : ''}</span>
   </div>
 }

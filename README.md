@@ -65,6 +65,4 @@ npm run preview
 
 ## 이미지
 
-내장 ImageGen 도구로 제작했습니다. 원본 장면은 `public/assets/office-scene.jpg`, 3가닥 스프라이트는 `public/assets/office-poses-sheet.png`입니다. 머리 모양별 시트는 같은 폴더의 `office-female-bob.png`, `office-female-long.png`, `office-male-short.png`, `office-male-taper.png`입니다. 각각 4열 × 2행의 자세 프레임을 사용하며 이미지를 늘리거나 휘지 않습니다.
-
-생성 프롬프트는 `IMAGE_PROMPT.txt`, `SPRITE_PROMPT.txt`, `CHARACTER_PROMPTS.txt`에 보관했습니다.
+내장 ImageGen 도구로 제작했습니다. 현재 시트는 `public/assets/office-male-sparse-v2.png`, `office-female-bob-v2.png`, `office-female-long-v2.png`, `office-male-short-v2.png`, `office-male-taper-v2.png`입니다. 각각 4열 × 2행의 자세 프레임을 사용하며 이미지를 늘리거나 휘지 않습니다. 타이핑할 때 두 손은 키보드 위에 있고, 마우스는 키보드 오른쪽에 따로 놓여 있습니다. 마우스 동작에서만 오른손이 마우스로 이동합니다. 생성 프롬프트는 `SPRITE_V2_PROMPTS.md`에 기록했습니다.
