@@ -8,7 +8,6 @@ export function restore(raw: string | null): MixerSettings {
     const data = JSON.parse(raw ?? 'null')
     if (!data || typeof data !== 'object') return result
     result.master = volume(data.master, result.master)
-    if (typeof data.characterMotion === 'boolean') result.characterMotion = data.characterMotion
     if (typeof data.personalEvents === 'boolean') result.personalEvents = data.personalEvents
     for (const c of categories) {
       const legacy: Record<string, string> = { water: 'drink', sigh: 'breath', 'phone-vibration': 'phone', 'nail-clipper': 'clipper', 'finger-tapping': 'fingers' }

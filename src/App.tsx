@@ -16,8 +16,6 @@ export default function App() {
   const [mode, setMode] = useState<'auto' | 'custom'>(() => categories.every(c => settings.channels[c.id].enabled === c.enabledByDefault) ? 'auto' : 'custom')
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState('')
-  const [systemMotion, setSystemMotion] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-  const motionEnabled = settings.characterMotion ?? systemMotion
   const engine = useRef<OfficeEngine | null>(null)
   const settingsRef = useRef(settings)
   settingsRef.current = settings
@@ -31,12 +29,6 @@ export default function App() {
     try { localStorage.setItem(storageKey, JSON.stringify({ ...settings, channels: Object.fromEntries(categories.map(c => [c.id, settings.channels[c.id]])) })) } catch { /* Local preferences are optional. */ }
   }, [settings])
   useEffect(() => { try { localStorage.setItem('office-noise:character', character) } catch { /* Local preferences are optional. */ } }, [character])
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const change = () => setSystemMotion(!query.matches)
-    query.addEventListener('change', change)
-    return () => query.removeEventListener('change', change)
-  }, [])
   const toggle = async () => {
     if (starting) return
     if (state.playing || state.personal) { engine.current?.pause(); return }
@@ -67,7 +59,7 @@ export default function App() {
   const gender = characters.find(c => c.id === character)!.gender
   const playing = state.playing || !!state.personal
   return <main className="office-app">
-    <OfficeScene personal={state.personal} motionEnabled={motionEnabled} character={character}/>
+    <OfficeScene personal={state.personal} motionEnabled={true} character={character}/>
     <button className="edge-button edge-left" aria-label="캐릭터 패널 열기" aria-expanded={leftOpen} aria-controls="character-panel" onClick={() => { setLeftOpen(true); if (window.innerWidth <= 700) setRightOpen(false) }}><UserRound size={19}/></button>
     <button className="edge-button edge-right" aria-label="소리 패널 열기" aria-expanded={rightOpen} aria-controls="sound-panel" onClick={() => { setRightOpen(true); if (window.innerWidth <= 700) setLeftOpen(false) }}><SlidersHorizontal size={19}/></button>
     <aside id="character-panel" className={`side-panel left-panel ${leftOpen ? 'is-open' : ''}`} inert={!leftOpen} aria-hidden={!leftOpen} aria-label="캐릭터">

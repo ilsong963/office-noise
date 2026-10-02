@@ -31,5 +31,5 @@ export interface SoundCategory {
 export type ChannelSettings = Record<string, { enabled: boolean; volume: number }>
 export type PersonalAction = 'keyboard' | 'mouse' | 'sigh'
 export interface PersonalEvent { id: number; kind: PersonalAction; startedAt: number; duration: number; soundOffset: number; soundDuration: number }
-export interface MixerSettings { master: number; channels: ChannelSettings; personalEvents?: boolean; characterMotion?: boolean }
+export interface MixerSettings { master: number; channels: ChannelSettings; personalEvents?: boolean }
 export interface EngineState { playing: boolean; active: string[]; errors: Record<string, string>; personal?: PersonalEvent }
