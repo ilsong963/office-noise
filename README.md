@@ -65,4 +65,4 @@ npm run preview
 
 ## 이미지
 
-내장 ImageGen 도구로 제작했습니다. 현재 시트는 `public/assets/office-male-sparse-v2.png`, `office-female-bob-v2.png`, `office-female-long-v2.png`, `office-male-short-v2.png`, `office-male-taper-v2.png`입니다. 각각 4열 × 2행의 자세 프레임을 사용하며 이미지를 늘리거나 휘지 않습니다. 타이핑은 장면 전체와 키보드를 고정하고, 독립된 SVG 양손의 온전한 윤곽을 바꿔 움직입니다. 손 이미지를 잘라 이동하지 않으며 손목은 팔에 연결된 상태를 유지합니다. 타이핑할 때 두 손은 키보드 위에 있고, 마우스는 키보드 오른쪽에 따로 놓여 있습니다. 마우스 동작에서만 오른손이 마우스로 이동합니다. 생성 프롬프트는 `SPRITE_V2_PROMPTS.md`에 기록했습니다.
+내장 ImageGen 도구로 제작했습니다. 현재 시트는 `public/assets/office-male-sparse-v2.png`, `office-female-bob-v2.png`, `office-female-long-v2.png`, `office-male-short-v2.png`, `office-male-taper-v2.png`입니다. 각각 4열 × 2행의 자세 프레임을 사용하며 이미지를 늘리거나 휘지 않습니다. 타이핑은 장면 전체와 키보드를 고정하고, 보이는 오른손의 검지·중지·약지·새끼손가락 네 개만 번갈아 굽힙니다. 엄지·손바닥·손목은 고정합니다. 손 이미지를 잘라 이동하지 않으며 손목은 팔에 연결된 상태를 유지합니다. 왼손은 몸 뒤에 가려 보이지 않으며, 마우스는 키보드 오른쪽에 따로 놓여 있습니다. 마우스 동작에서만 오른손이 마우스로 이동합니다. 생성 프롬프트는 `SPRITE_V2_PROMPTS.md`에 기록했습니다.

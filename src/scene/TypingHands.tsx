@@ -1,20 +1,30 @@
 type Pose = 0 | 1 | 2 | 3
 
-// Closed hand silhouettes bend at the fingers; no keyboard pixels move with them.
-const rightHands: Record<Pose, string> = {
-  0: 'M254 199 Q253 195 257 191 L263 184 Q265 182 267 184 L263 191 L271 182 Q273 180 275 182 L270 192 L278 185 Q280 183 282 185 L276 195 L283 190 Q286 189 286 192 L279 200 Q276 204 270 207 Z',
-  1: 'M254 199 Q252 194 257 188 L261 179 Q263 177 265 179 L263 188 L269 176 Q271 174 273 177 L270 188 L277 179 Q280 177 281 180 L276 191 L283 186 Q286 185 287 188 L279 198 Q276 204 270 207 Z',
-  2: 'M254 199 Q253 195 257 190 L262 182 Q264 180 266 182 L263 190 L271 183 Q274 181 275 184 L270 192 L278 187 Q281 185 282 188 L276 195 L283 191 Q286 190 286 193 L279 200 Q276 204 270 207 Z',
-  3: 'M254 199 Q253 195 258 192 L264 187 Q267 185 268 188 L264 193 L270 179 Q272 177 274 179 L271 190 L277 183 Q280 181 281 184 L276 195 L282 193 Q286 192 286 195 L279 201 Q275 205 270 207 Z',
+// Only the four finger arcs change. Thumb, palm and wrist anchors are shared
+// by every pose so the hand stays attached and the keyboard never moves.
+const fingerTravel: Record<Pose, readonly number[]> = {
+  0: [0, 0, 0, 0],
+  1: [-1, 1, -1, 1],
+  2: [2, -1, 2, -1],
+  3: [-1, 2, -1, 2],
 }
-const leftHands: Record<Pose, string> = {
-  0: 'M243 197 L241 192 L244 184 Q246 182 248 184 L247 190 L251 182 Q253 181 254 184 L252 190 L257 185 Q260 184 260 187 L257 192 L261 191 Q263 192 261 195 L254 201 Z',
-  1: 'M243 197 L241 191 L243 181 Q245 179 247 181 L247 188 L250 178 Q252 176 254 179 L253 188 L257 181 Q260 180 260 183 L257 190 L261 187 Q264 188 262 191 L254 201 Z',
-  2: 'M243 197 L241 192 L244 187 Q246 185 248 187 L247 192 L251 180 Q253 178 255 181 L253 190 L258 184 Q260 183 261 186 L257 193 L261 191 Q264 192 261 195 L254 201 Z',
-  3: 'M243 197 L241 192 L244 182 Q246 180 248 182 L247 190 L251 185 Q254 184 255 186 L252 192 L257 188 Q260 186 261 189 L257 194 L261 192 Q264 193 261 196 L254 201 Z',
+
+export function typingHandParts(pose: Pose) {
+  const [index, middle, ring, little] = fingerTravel[pose]
+  return {
+    thumb: 'M254 199 Q250 197 250 192 L250 190 Q250 187 252 187 Q255 187 256 191 L257 192',
+    fingers: [
+      `L257 ${188 + index} Q257 ${184 + index} 260 ${184 + index} Q264 ${184 + index} 264 ${188 + index} L264 191`,
+      `L265 ${187 + middle} Q266 ${183 + middle} 269 ${183 + middle} Q273 ${183 + middle} 272 ${187 + middle} L271 191`,
+      `L273 ${188 + ring} Q275 ${184 + ring} 278 ${185 + ring} Q281 ${186 + ring} 279 ${189 + ring} L278 193`,
+      `L281 ${190 + little} Q283 ${186 + little} 286 ${187 + little} Q289 ${190 + little} 286 ${193 + little} L283 195`,
+    ],
+    palm: 'Q281 202 270 207 L254 199 Z',
+  }
 }
 
 export default function TypingHands({ pose }: { pose: Pose }) {
+  const hand = typingHandParts(pose)
   return <svg className="office-sprite-pose office-typing-drawing" viewBox="0 0 443.5 443.5" aria-hidden="true" data-hand-pose={pose}>
     {/* Static reconstruction hides the baked-in hands; only the hand paths vary. */}
     <g className="office-typing-desk">
@@ -32,8 +42,7 @@ export default function TypingHands({ pose }: { pose: Pose }) {
       </g>
     </g>
     <g fill="white" stroke="#292929" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round">
-      <path className="office-hand-left" d={leftHands[pose]}/>
-      <path className="office-hand-right" d={rightHands[pose]}/>
+      <path className="office-hand-right" d={[hand.thumb, ...hand.fingers, hand.palm].join(' ')}/>
       {/* Sleeve and wrist connections remain registered in every pose. */}
       <path fill="white" stroke="none" d="M227 170 C237 183 241 195 249 202 L254 197 Q264 198 272 205 C269 221 256 234 241 230 L235 225 L230 202 Z"/>
       <path fill="none" d="M227 170 C237 183 241 195 249 202 L254 197 Q264 198 272 205 C269 221 256 234 241 230 L237 228 L236 235"/>

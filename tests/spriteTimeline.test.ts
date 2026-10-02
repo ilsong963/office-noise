@@ -3,16 +3,16 @@ import { spriteFrame } from '../src/scene/spriteTimeline'
 import type { PersonalEvent } from '../src/audio/types'
 const typing: PersonalEvent = { id: 1, kind: 'keyboard', startedAt: 0, duration: 4.55, soundOffset: .55, soundDuration: 3.5 }
 describe('pose sequence without deformation', () => {
-  it('lifts the hand from the mouse before the first keyboard sound', () => {
+  it('prepares the fingers before the first keyboard sound', () => {
     expect(spriteFrame(typing, 0, true)).toBe(0)
     expect(spriteFrame(typing, .2, true)).toBe(1)
     expect(spriteFrame(typing, .54, true)).toBe(1)
     expect(spriteFrame(typing, .55, true)).toBe(2)
   })
-  it('keeps both hands on keyboard frames while typing audio plays', () => {
+  it('keeps the fingers in typing poses while typing audio plays', () => {
     for (let t = typing.soundOffset; t < typing.soundOffset + typing.soundDuration; t += .013) expect([2, 3]).toContain(spriteFrame(typing, t, true))
   })
-  it('returns to the mouse only after typing ends', () => {
+  it('returns the fingers to rest only after typing ends', () => {
     expect(spriteFrame(typing, 4.1, true)).toBe(1)
     expect(spriteFrame(typing, 4.45, true)).toBe(0)
   })
